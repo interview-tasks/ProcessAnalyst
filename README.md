@@ -1,4 +1,4 @@
-# SOCAR Process Analysis Insights
+# SOCAR Process Analysis Insights (Revised)
 
 ## Overview of Analysis
 
@@ -42,14 +42,9 @@ A strong correlation exists between energy consumption and safety incidents. Pro
 
 Our parameter analysis reveals that pressure has the strongest negative correlation with efficiency, while processing volume shows a positive correlation. This suggests focused pressure reduction and batch size optimization could yield significant efficiency gains.
 
-![Process Step Optimization](charts/process_step_optimization.png)
+![Process Duration Comparison](charts/process_duration_comparison.png)
 
-The process step optimization chart identifies ideal operating conditions:
-- Moderate temperatures (222.5°C)
-- Low pressure (7.5 bar)
-- Moderate duration (11.8 hours)
-
-These parameters create a blueprint for optimization across processes.
+The process duration comparison identifies ideal operating conditions across different process types, creating a blueprint for optimization across processes. Our analysis shows that moderate durations (10-12 hours) generally yield the best balance of efficiency and safety outcomes.
 
 ### Process Flow Analysis
 
@@ -110,7 +105,7 @@ Based on the comprehensive analysis of the charts in our repository, we recommen
 
 ### 1. Process Optimization Roadmap
 
-![Process Optimization Matrix](charts/process_optimization_matrix.png)
+![Process Improvement Opportunities](charts/process_improvement_opportunities.png)
 
 Implement a three-phase optimization strategy:
 
@@ -129,10 +124,6 @@ Implement a three-phase optimization strategy:
    - Implement temperature and pressure controls within identified safety zones
    - Standardize optimal staffing models tailored to process requirements
 
-![Process Duration Comparison](charts/process_duration_comparison.png)
-
-Our analysis of process duration shows significant opportunities for optimization, potentially reducing cycle times by 15-20% while maintaining or improving safety profiles.
-
 ### 2. Environmental Sustainability Integration
 
 ![Environmental Savings Projection](charts/environmental_savings_projection.png)
@@ -145,7 +136,7 @@ Leverage the correlation between environmental impact and operational performanc
 
 ### 3. Business Value Creation
 
-![Data Storytelling Dashboard](charts/data_storytelling_dashboard.png)
+![Synthetic Fuel Opportunity Cost](charts/synthetic_fuel_opportunity_cost.png)
 
 Quantify and capture the business benefits of process optimization:
 
