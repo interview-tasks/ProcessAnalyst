@@ -158,7 +158,7 @@ The model doesn't just predict incidents; it illuminates the path to zero-incide
 
 ---
 
-> **Author**: Ismat Samadov 
+> **Author**: Ismat Samadov  
 > **Date**: March 2025  
 > **Version**: 1.0  
 > **Contact**: ismetsemedov@gmail.com
