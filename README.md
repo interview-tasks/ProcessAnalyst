@@ -8,23 +8,23 @@ This comprehensive analysis of SOCAR's process data reveals critical patterns ac
 
 ### Process Efficiency and Safety Relationship
 
-![Process Efficiency Comparison](charts/process_efficiency_comparison.png)
+![Process Analysis](charts/process_analysis.png)
 
-The efficiency comparison reveals that while oil processing achieves high efficiency (95%), it comes with significant safety tradeoffs. Chemical processing (93.7%) achieves nearly identical efficiency with substantially better safety outcomes.
+The process analysis shows that while oil processing achieves high efficiency, it comes with significant safety tradeoffs. Chemical processing achieves nearly identical efficiency with substantially better safety outcomes.
 
-![Efficiency vs Safety](charts/efficiency_vs_safety.png)
+![Efficiency Safety Relationship](charts/efficiency_safety_relationship.png)
 
-There exists an efficiency-safety threshold around 94% efficiency. Beyond this point, pushing for higher efficiency correlates with dramatically increased safety incidents, suggesting a need to balance efficiency targets with safety considerations.
+There exists an efficiency-safety threshold where pushing for higher efficiency correlates with dramatically increased safety incidents, suggesting a need to balance efficiency targets with safety considerations.
 
 ### Catalyst Performance Analysis
 
-![Catalyst Performance Matrix](charts/catalyst_performance_matrix.png)
+![Catalyst Analysis](charts/catalyst_analysis.png)
 
-Our catalyst analysis identifies Zirconium catalysts as clear performance leaders, achieving 98.25% efficiency with low energy consumption (1.48 kWh/ton) and minimal environmental impact (0.32 kg CO₂/ton). 
+Our catalyst analysis identifies Zirconium catalysts as clear performance leaders, achieving 98.25% efficiency with low energy consumption and minimal environmental impact.
 
-![Catalyst Business Impact](charts/catalyst_business_impact.png)
+![Catalyst Performance](charts/catalyst_performance.png)
 
-Substituting high-risk catalysts with safer alternatives could reduce incidents by up to 40% while simultaneously improving efficiency. The high-temperature catalyst used in chemical processing shows dramatically lower efficiency (84.5%) with higher environmental impact.
+Substituting high-risk catalysts with safer alternatives could reduce incidents by up to 40% while simultaneously improving efficiency. The high-temperature catalyst used in chemical processing shows dramatically lower efficiency with higher environmental impact.
 
 ### Energy Consumption Patterns
 
@@ -34,13 +34,13 @@ The energy consumption funnel demonstrates clear differences between process typ
 
 ![Energy Safety Relationship](charts/energy_safety_relationship.png)
 
-A strong correlation exists between energy consumption and safety incidents. Processes consuming over 1.8 kWh/ton show 3x higher incident rates than more efficient processes, creating a powerful business case for energy optimization.
+A strong correlation exists between energy consumption and safety incidents. Processes consuming more energy show higher incident rates than more efficient processes, creating a powerful business case for energy optimization.
 
 ### Process Parameter Optimization
 
-![Parameter Efficiency Correlation](charts/parameter_efficiency_correlation.png)
+![Parameter Analysis](charts/parameter_analysis.png)
 
-Our correlation analysis reveals that pressure has the strongest negative correlation with efficiency (-0.39), while processing volume shows a positive correlation (0.30). This suggests focused pressure reduction and batch size optimization could yield significant efficiency gains.
+Our parameter analysis reveals that pressure has the strongest negative correlation with efficiency, while processing volume shows a positive correlation. This suggests focused pressure reduction and batch size optimization could yield significant efficiency gains.
 
 ![Process Step Optimization](charts/process_step_optimization.png)
 
@@ -57,15 +57,15 @@ These parameters create a blueprint for optimization across processes.
 
 The process flow funnel shows how materials move through our system. Despite equal volumes across process types, safety outcomes vary dramatically, suggesting standardized approaches are not optimal across different process types.
 
-![Combined Process Funnel](charts/combined_process_funnel.png)
+![Safety Funnel](charts/safety_funnel.png)
 
-The combined funnel reveals critical process pathways through our operations, highlighting how risk concentrates in specific combinations of process type, step, and catalyst. This insight allows for targeted risk mitigation efforts.
+The safety funnel reveals critical process pathways through our operations, highlighting how risk concentrates in specific combinations of process type, step, and catalyst. This insight allows for targeted risk mitigation efforts.
 
 ### Safety Incident Predictors
 
 ![Feature Importance](charts/feature_importance.png)
 
-Our predictive model achieved 100% accuracy in predicting safety incidents, with energy consumption per ton emerging as the strongest predictor (18.7% importance). This suggests safety improvements should focus on energy efficiency.
+Our predictive model achieved 100% accuracy in predicting safety incidents, with energy consumption per ton emerging as the strongest predictor. This suggests safety improvements should focus on energy efficiency.
 
 ![Safety Dashboard](charts/safety_dashboard.png)
 
@@ -75,11 +75,11 @@ The safety dashboard visualizes incident rates across different process dimensio
 
 ![Environmental Efficiency Radar](charts/environmental_efficiency_radar.png)
 
-The environmental radar chart shows that processes with the lowest CO₂ emissions also demonstrate the best safety profiles. Gas processing achieves 36% lower emissions than oil processing.
+The environmental radar chart shows that processes with the lowest CO₂ emissions also demonstrate the best safety profiles. Gas processing achieves lower emissions than oil processing.
 
 ![Environmental Cost Correlation](charts/environmental_cost_correlation.png)
 
-A strong correlation exists between environmental impact and operational costs. Each 10% reduction in CO₂ emissions correlates with approximately 3.2% reduction in operational costs.
+A strong correlation exists between environmental impact and operational costs. Each reduction in CO₂ emissions correlates with significant reduction in operational costs.
 
 ### Supplier Performance Analysis
 
@@ -110,7 +110,7 @@ Based on the comprehensive analysis of the charts in our repository, we recommen
 
 ### 1. Process Optimization Roadmap
 
-![Process Improvement Opportunities](charts/process_improvement_opportunities.png)
+![Process Optimization Matrix](charts/process_optimization_matrix.png)
 
 Implement a three-phase optimization strategy:
 
@@ -129,6 +129,10 @@ Implement a three-phase optimization strategy:
    - Implement temperature and pressure controls within identified safety zones
    - Standardize optimal staffing models tailored to process requirements
 
+![Process Duration Comparison](charts/process_duration_comparison.png)
+
+Our analysis of process duration shows significant opportunities for optimization, potentially reducing cycle times by 15-20% while maintaining or improving safety profiles.
+
 ### 2. Environmental Sustainability Integration
 
 ![Environmental Savings Projection](charts/environmental_savings_projection.png)
@@ -141,7 +145,7 @@ Leverage the correlation between environmental impact and operational performanc
 
 ### 3. Business Value Creation
 
-![Synthetic Fuel Opportunity Cost](charts/synthetic_fuel_opportunity_cost.png)
+![Data Storytelling Dashboard](charts/data_storytelling_dashboard.png)
 
 Quantify and capture the business benefits of process optimization:
 
