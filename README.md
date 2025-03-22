@@ -1,4 +1,4 @@
-# SOCAR Process Analysis Insights (Revised)
+# SOCAR Process Analysis Insights
 
 ## Overview of Analysis
 
