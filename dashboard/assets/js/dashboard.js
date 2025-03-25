@@ -5,8 +5,8 @@
 
 // Dashboard configuration
 const config = {
-    dataPath: 'data/',
-    chartsPath: 'charts/',
+    dataPath: 'dashboard/data/',
+    chartsPath: 'dashboard/charts/',
     processDependencies: {
         overview: ['process_efficiency.json', 'energy_safety.json', 'roi_waterfall.json'],
         efficiency: ['process_hierarchy.json', 'efficiency_correlation.json'],
@@ -40,6 +40,9 @@ const config = {
         'roi-by-process-chart': 'roi_by_process.json'
     }
 };
+
+// Rest of the dashboard.js file content remains the same
+// Only the paths in the config object above need to be updated with the dashboard/ prefix
 
 // Global state
 let dashboardData = {
