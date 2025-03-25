@@ -8,104 +8,104 @@ This comprehensive analysis of SOCAR's process data reveals critical patterns ac
 
 ### Process Efficiency and Safety Relationship
 
-![Process Analysis](charts/process_analysis.png)
+![Process Analysis](/analysis/data/charts/process_analysis.png)
 
 The process analysis shows that while oil processing achieves high efficiency, it comes with significant safety tradeoffs. Chemical processing achieves nearly identical efficiency with substantially better safety outcomes.
 
-![Efficiency Safety Relationship](charts/efficiency_safety_relationship.png)
+![Efficiency Safety Relationship](/analysis/data/charts/efficiency_safety_relationship.png)
 
 There exists an efficiency-safety threshold where pushing for higher efficiency correlates with dramatically increased safety incidents, suggesting a need to balance efficiency targets with safety considerations.
 
 ### Catalyst Performance Analysis
 
-![Catalyst Analysis](charts/catalyst_analysis.png)
+![Catalyst Analysis](/analysis/data/charts/catalyst_analysis.png)
 
 Our catalyst analysis identifies Zirconium catalysts as clear performance leaders, achieving 98.25% efficiency with low energy consumption and minimal environmental impact.
 
-![Catalyst Performance](charts/catalyst_performance.png)
+![Catalyst Performance](/analysis/data/charts/catalyst_performance.png)
 
 Substituting high-risk catalysts with safer alternatives could reduce incidents by up to 40% while simultaneously improving efficiency. The high-temperature catalyst used in chemical processing shows dramatically lower efficiency with higher environmental impact.
 
 ### Energy Consumption Patterns
 
-![Energy Funnel](charts/energy_funnel.png)
+![Energy Funnel](/analysis/data/charts/energy_funnel.png)
 
 The energy consumption funnel demonstrates clear differences between process types and steps. Chemical polymerization requires 13% less energy than oil distillation while maintaining comparable efficiency.
 
-![Energy Safety Relationship](charts/energy_safety_relationship.png)
+![Energy Safety Relationship](/analysis/data/charts/energy_safety_relationship.png)
 
 A strong correlation exists between energy consumption and safety incidents. Processes consuming more energy show higher incident rates than more efficient processes, creating a powerful business case for energy optimization.
 
 ### Process Parameter Optimization
 
-![Parameter Analysis](charts/parameter_analysis.png)
+![Parameter Analysis](/analysis/data/charts/parameter_analysis.png)
 
 Our parameter analysis reveals that pressure has the strongest negative correlation with efficiency, while processing volume shows a positive correlation. This suggests focused pressure reduction and batch size optimization could yield significant efficiency gains.
 
-![Process Duration Comparison](charts/process_duration_comparison.png)
+![Process Duration Comparison](/analysis/data/charts/process_duration_comparison.png)
 
 The process duration comparison identifies ideal operating conditions across different process types, creating a blueprint for optimization across processes. Our analysis shows that moderate durations (10-12 hours) generally yield the best balance of efficiency and safety outcomes.
 
 ### Process Flow Analysis
 
-![Process Flow Funnel](charts/process_flow_funnel.png)
+![Process Flow Funnel](/analysis/data/charts/process_flow_funnel.png)
 
 The process flow funnel shows how materials move through our system. Despite equal volumes across process types, safety outcomes vary dramatically, suggesting standardized approaches are not optimal across different process types.
 
-![Safety Funnel](charts/safety_funnel.png)
+![Safety Funnel](/analysis/data/charts/safety_funnel.png)
 
 The safety funnel reveals critical process pathways through our operations, highlighting how risk concentrates in specific combinations of process type, step, and catalyst. This insight allows for targeted risk mitigation efforts.
 
 ### Safety Incident Predictors
 
-![Feature Importance](charts/feature_importance.png)
+![Feature Importance](/analysis/data/charts/feature_importance.png)
 
 Our predictive model achieved 100% accuracy in predicting safety incidents, with energy consumption per ton emerging as the strongest predictor. This suggests safety improvements should focus on energy efficiency.
 
-![Safety Dashboard](charts/safety_dashboard.png)
+![Safety Dashboard](/analysis/data/charts/safety_dashboard.png)
 
 The safety dashboard visualizes incident rates across different process dimensions. Chemical polymerization and control cracking show zero incidents, while oil distillation and catalytic cracking have 100% incident rates.
 
 ### Environmental Impact Analysis
 
-![Environmental Efficiency Radar](charts/environmental_efficiency_radar.png)
+![Environmental Efficiency Radar](/analysis/data/charts/environmental_efficiency_radar.png)
 
 The environmental radar chart shows that processes with the lowest CO₂ emissions also demonstrate the best safety profiles. Gas processing achieves lower emissions than oil processing.
 
-![Environmental Cost Correlation](charts/environmental_cost_correlation.png)
+![Environmental Cost Correlation](/analysis/data/charts/environmental_cost_correlation.png)
 
 A strong correlation exists between environmental impact and operational costs. Each reduction in CO₂ emissions correlates with significant reduction in operational costs.
 
 ### Supplier Performance Analysis
 
-![Supplier Performance Matrix](charts/supplier_performance_matrix.png)
+![Supplier Performance Matrix](/analysis/data/charts/supplier_performance_matrix.png)
 
 Our supplier analysis reveals significant variation in quality and performance. UV Polymer Catalyst suppliers achieve the best combination of efficiency, safety, and environmental performance.
 
-![Supplier Improvement Opportunity](charts/supplier_improvement_opportunity.png)
+![Supplier Improvement Opportunity](/analysis/data/charts/supplier_improvement_opportunity.png)
 
 Strategic supplier partnerships could yield 8-12% efficiency improvements and 15-20% safety enhancements through specialized catalyst formulations and technical support.
 
 ### Workforce Optimization
 
-![Worker Allocation Paradox](charts/worker_allocation_paradox.png)
+![Worker Allocation Paradox](/analysis/data/charts/worker_allocation_paradox.png)
 
 Our analysis identified optimal staffing levels for each process type:
 - Chemical processes: 15-20 workers optimal
 - Oil processes: 20-25 workers optimal
 - Gas processes: 10-15 workers optimal
 
-![Worker Efficiency Analysis](charts/worker_efficiency_analysis.png)
+![Worker Efficiency Analysis](/analysis/data/charts/worker_efficiency_analysis.png)
 
 Worker efficiency follows a bell curve, with peak efficiency at different staffing levels for each process type. Understaffed processes show increased incidents from worker fatigue, while overstaffed processes create coordination challenges.
 
 ## Strategic Recommendations
 
-Based on the comprehensive analysis of the charts in our repository, we recommend the following strategic initiatives:
+Based on the comprehensive analysis of the /analysis/data/charts in our repository, we recommend the following strategic initiatives:
 
 ### 1. Process Optimization Roadmap
 
-![Process Improvement Opportunities](charts/process_improvement_opportunities.png)
+![Process Improvement Opportunities](/analysis/data/charts/process_improvement_opportunities.png)
 
 Implement a three-phase optimization strategy:
 
@@ -126,7 +126,7 @@ Implement a three-phase optimization strategy:
 
 ### 2. Environmental Sustainability Integration
 
-![Environmental Savings Projection](charts/environmental_savings_projection.png)
+![Environmental Savings Projection](/analysis/data/charts/environmental_savings_projection.png)
 
 Leverage the correlation between environmental impact and operational performance:
 
@@ -136,7 +136,7 @@ Leverage the correlation between environmental impact and operational performanc
 
 ### 3. Business Value Creation
 
-![Synthetic Fuel Opportunity Cost](charts/synthetic_fuel_opportunity_cost.png)
+![Synthetic Fuel Opportunity Cost](/analysis/data/charts/synthetic_fuel_opportunity_cost.png)
 
 Quantify and capture the business benefits of process optimization:
 
