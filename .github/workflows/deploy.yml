@@ -3,9 +3,6 @@ name: Deploy Dashboard to GitHub Pages
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'dashboard/**'
-      - '.github/workflows/deploy-dashboard.yml'
   
   # Allow manual deployment
   workflow_dispatch:
@@ -32,12 +29,19 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v3
       
-      # Ensure .nojekyll file exists to disable Jekyll processing
-      - name: Create .nojekyll file if it doesn't exist
+      # Create .nojekyll file
+      - name: Create .nojekyll file
+        run: touch dashboard/.nojekyll
+      
+      # Debug - list all files to verify structure
+      - name: List dashboard directory contents
         run: |
-          if [ ! -f dashboard/.nojekyll ]; then
-            touch dashboard/.nojekyll
-          fi
+          echo "Dashboard directory contents:"
+          ls -la dashboard/
+          echo "Dashboard assets directory contents:"
+          ls -la dashboard/assets/ || echo "No assets directory found"
+          echo "Dashboard index.html file:"
+          ls -la dashboard/index.html || echo "No index.html found"
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
