@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOCAR Process Analysis Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    
+    <!-- Plotly.js for visualization -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-dark text-white p-3">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">SOCAR Process Analysis Dashboard</h1>
+                <div class="d-flex">
+                    <button class="btn btn-outline-light me-2" id="fullscreen-btn">
+                        <i class="bi bi-fullscreen"></i> Fullscreen
+                    </button>
+                    <a href="https://github.com/your-username/SOCAR_ProcessAnalyst" target="_blank" class="btn btn-outline-light">
+                        <i class="bi bi-github"></i> View Source
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Dashboard Views</span>
+                    </h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="overview-tab" data-section="overview">
+                                <i class="bi bi-house-door"></i> Overview
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="efficiency-tab" data-section="efficiency">
+                                <i class="bi bi-graph-up"></i> Process Efficiency
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="energy-tab" data-section="energy">
+                                <i class="bi bi-lightning"></i> Energy Analysis
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="safety-tab" data-section="safety">
+                                <i class="bi bi-shield"></i> Safety Analysis
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="catalyst-tab" data-section="catalyst">
+                                <i class="bi bi-radioactive"></i> Catalyst Performance
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="roi-tab" data-section="roi">
+                                <i class="bi bi-currency-dollar"></i> ROI Projection
+                            </a>
+                        </li>
+                    </ul>
+
+                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                        <span>Filters</span>
+                    </h6>
+                    <div class="px-3">
+                        <div class="mb-3">
+                            <label for="process-type-filter" class="form-label">Process Type</label>
+                            <select class="form-select form-select-sm" id="process-type-filter">
+                                <option value="all" selected>All Process Types</option>
+                                <!-- Will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="process-step-filter" class="form-label">Process Step</label>
+                            <select class="form-select form-select-sm" id="process-step-filter">
+                                <option value="all" selected>All Process Steps</option>
+                                <!-- Will be populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="catalyst-filter" class="form-label">Catalyst</label>
+                            <select class="form-select form-select-sm" id="catalyst-filter">
+                                <option value="all" selected>All Catalysts</option>
+                                <!-- Will be populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h2 id="section-title">Dashboard Overview</h2>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="export-pdf">Export PDF</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" id="export-png">Export PNG</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Overview Section -->
+                <div id="overview-section" class="dashboard-section active">
+                    <div class="row">
+                        <!-- KPI Cards -->
+                        <div class="col-md-3 mb-4">
+                            <div class="card text-white bg-primary">
+                                <div class="card-body">
+                                    <h5 class="card-title">Process Efficiency</h5>
+                                    <h2 class="card-text" id="kpi-efficiency">92.5%</h2>
+                                    <p class="card-text"><small>Target: 95%</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card text-white bg-success">
+                                <div class="card-body">
+                                    <h5 class="card-title">Energy Consumption</h5>
+                                    <h2 class="card-text" id="kpi-energy">1.8 kWh/ton</h2>
+                                    <p class="card-text"><small>Target: 1.6 kWh/ton</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card text-white bg-danger">
+                                <div class="card-body">
+                                    <h5 class="card-title">Safety Incidents</h5>
+                                    <h2 class="card-text" id="kpi-safety">3.2 per 1000t</h2>
+                                    <p class="card-text"><small>Target: <2 per 1000t</small></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="card text-white bg-info">
+                                <div class="card-body">
+                                    <h5 class="card-title">Potential Savings</h5>
+                                    <h2 class="card-text" id="kpi-savings">₼2.15M</h2>
+                                    <p class="card-text"><small>ROI Period: 18 months</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Overview Charts -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Process Efficiency by Type
+                                </div>
+                                <div class="card-body">
+                                    <div id="process-efficiency-chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Energy vs Safety Relationship
+                                </div>
+                                <div class="card-body">
+                                    <div id="energy-safety-chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    ROI Projection
+                                </div>
+                                <div class="card-body">
+                                    <div id="roi-waterfall-chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Process Efficiency Section -->
+                <div id="efficiency-section" class="dashboard-section">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Process Hierarchy
+                                </div>
+                                <div class="card-body">
+                                    <div id="process-hierarchy-chart" style="height: 500px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Parameter Correlation with Efficiency
+                                </div>
+                                <div class="card-body">
+                                    <div id="efficiency-correlation-chart" style="height: 400px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Energy Analysis Section -->
+                <div id="energy-section" class="dashboard-section">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Energy Consumption vs Safety Incidents
+                                </div>
+                                <div class="card-body">
+                                    <div id="energy-safety-relationship-chart" style="height: 500px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Energy Consumption by Process Type
+                                </div>
+                                <div class="card-body">
+                                    <div id="energy-by-process-chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Energy vs Temperature and Pressure
+                                </div>
+                                <div class="card-body">
+                                    <div id="energy-parameters-chart" style="height: 300px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Safety Analysis Section -->
+                <div id="safety-section" class="dashboard-section">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Safety Incident Rate by Temperature and Pressure
+                                </div>
+                                <div class="card-body">
+                                    <div id="safety-heatmap-chart" style="height: 500px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Safety Incident Rate by Process Step
+                                </div>
+                                <div class="card-body">
+                                    <div id="process-step-safety-chart" style="height: 400px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Catalyst Performance Section -->
+                <div id="catalyst-section" class="dashboard-section">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Catalyst Performance Matrix
+                                </div>
+                                <div class="card-body">
+                                    <div id="catalyst-matrix-chart" style="height: 500px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Catalyst Parameter Comparison
+                                </div>
+                                <div class="card-body">
+                                    <div id="catalyst-parallel-chart" style="height: 500px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROI Projection Section -->
+                <div id="roi-section" class="dashboard-section">
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Annual Cost Savings Potential
+                                </div>
+                                <div class="card-body">
+                                    <div id="roi-waterfall-chart" style="height: 500px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    ROI Analysis by Process Type
+                                </div>
+                                <div class="card-body">
+                                    <div id="roi-by-process-chart" style="height: 400px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    Investment Calculator
+                                </div>
+                                <div class="card-body">
+                                    <form id="roi-calculator-form">
+                                        <div class="mb-3">
+                                            <label for="process-type-input" class="form-label">Process Type</label>
+                                            <select class="form-select" id="process-type-input">
+                                                <!-- Will be populated dynamically -->
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="implementation-cost" class="form-label">Implementation Cost (AZN)</label>
+                                            <input type="number" class="form-control" id="implementation-cost" value="1000000">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="efficiency-improvement" class="form-label">Efficiency Improvement (%)</label>
+                                            <input type="number" class="form-control" id="efficiency-improvement" value="5" min="0" max="20">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Calculate ROI</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    ROI Results
+                                </div>
+                                <div class="card-body" id="roi-results">
+                                    <div class="alert alert-info">
+                                        Enter values in the calculator to see ROI projections
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">SOCAR Process Analysis Dashboard &copy; 2025</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Custom Dashboard JS -->
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>
