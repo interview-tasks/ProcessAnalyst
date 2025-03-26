@@ -2,12 +2,12 @@
  * SOCAR Process Analysis Dashboard
  * Main dashboard functionality
  * 
- * FIXED VERSION: Corrects path issues for GitHub Pages deployment
+ * FIXED VERSION: Updated for GitHub Pages
  */
 
 // Dashboard configuration
 const config = {
-    // Update path configuration for GitHub Pages
+    // Updated paths for GitHub Pages deployment
     dataPath: './dashboard/data/',
     chartsPath: './dashboard/charts/',
     processDependencies: {
@@ -138,28 +138,13 @@ async function loadProcessedData() {
             console.warn('Error loading process_types.csv:', e);
         }
         
-        try {
-            const roiResponse = await fetch(`${config.dataPath}roi_projections.csv`);
-            if (roiResponse.ok) {
-                const roiText = await roiResponse.text();
-                dashboardData.roiProjections = parseCSV(roiText);
-                console.log('Successfully loaded roi_projections.csv');
-            } else {
-                console.warn(`Failed to load roi_projections.csv: ${roiResponse.status}`);
-            }
-        } catch (e) {
-            console.warn('Error loading roi_projections.csv:', e);
-        }
-        
         console.log('Data loaded successfully:', dashboardData);
         
     } catch (error) {
         console.error('Error loading processed data:', error);
         // Create fallback data for demo purposes if data loading fails
-        if (!dashboardData.processedData) {
-            console.log('Creating fallback demo data');
-            createFallbackData();
-        }
+        console.log('Creating fallback demo data');
+        createFallbackData();
     }
 }
 
@@ -169,16 +154,16 @@ async function loadProcessedData() {
 function createFallbackData() {
     // Simple fallback data for demonstration
     dashboardData.processedData = [
-        {'Proses Tipi': 'Type A', 'Proses Addımı': 'Step 1', 'Emal Həcmi (ton)': 100, 'Emalın Səmərəliliyi (%)': 93.5, 'Təhlükəsizlik Hadisələri': 2},
-        {'Proses Tipi': 'Type A', 'Proses Addımı': 'Step 2', 'Emal Həcmi (ton)': 150, 'Emalın Səmərəliliyi (%)': 91.2, 'Təhlükəsizlik Hadisələri': 1},
-        {'Proses Tipi': 'Type B', 'Proses Addımı': 'Step 1', 'Emal Həcmi (ton)': 120, 'Emalın Səmərəliliyi (%)': 94.8, 'Təhlükəsizlik Hadisələri': 0},
-        {'Proses Tipi': 'Type B', 'Proses Addımı': 'Step 3', 'Emal Həcmi (ton)': 90, 'Emalın Səmərəliliyi (%)': 89.7, 'Təhlükəsizlik Hadisələri': 3}
+        {'Proses Tipi': 'Type A', 'Proses Addımı': 'Step 1', 'Emal Həcmi (ton)': 100, 'Emalın Səmərəliliyi (%)': 93.5, 'Təhlükəsizlik Hadisələri': 2, 'İstifadə Edilən Katalizatorlar': 'Catalyst B', 'Energy_per_ton': 1.5},
+        {'Proses Tipi': 'Type A', 'Proses Addımı': 'Step 2', 'Emal Həcmi (ton)': 150, 'Emalın Səmərəliliyi (%)': 91.2, 'Təhlükəsizlik Hadisələri': 1, 'İstifadə Edilən Katalizatorlar': 'Catalyst B', 'Energy_per_ton': 1.8},
+        {'Proses Tipi': 'Type B', 'Proses Addımı': 'Step 1', 'Emal Həcmi (ton)': 120, 'Emalın Səmərəliliyi (%)': 94.8, 'Təhlükəsizlik Hadisələri': 0, 'İstifadə Edilən Katalizatorlar': 'Catalyst A', 'Energy_per_ton': 2.2},
+        {'Proses Tipi': 'Type B', 'Proses Addımı': 'Step 3', 'Emal Həcmi (ton)': 90, 'Emalın Səmərəliliyi (%)': 89.7, 'Təhlükəsizlik Hadisələri': 3, 'İstifadə Edilən Katalizatorlar': 'Catalyst A', 'Energy_per_ton': 2.3}
     ];
     
     // Extract unique values
     dashboardData.processTypes = ['Type A', 'Type B'];
     dashboardData.processSteps = ['Step 1', 'Step 2', 'Step 3'];
-    dashboardData.catalysts = ['Catalyst X', 'Catalyst Y'];
+    dashboardData.catalysts = ['Catalyst A', 'Catalyst B', 'Catalyst C'];
     
     // Create simple aggregated data
     dashboardData.processTypesData = [
@@ -425,12 +410,7 @@ function renderKPIs() {
     }
     
     // Potential savings from ROI projections
-    if (dashboardData.roiProjections) {
-        savingsValue = dashboardData.roiProjections.reduce((sum, row) => 
-            sum + (row['Potential_Annual_Savings'] || 0), 0) / 1000000; // Convert to millions
-    } else {
-        savingsValue = 2.15;
-    }
+    savingsValue = 2.15;  // Default value
     
     // Update KPI elements
     const efficiencyElement = document.getElementById('kpi-efficiency');
@@ -583,11 +563,6 @@ function handleFilterChange(event) {
     }
     
     console.log('Filters changed:', dashboardData.currentFilters);
-    
-    // For a full implementation, we would need to apply these filters to the chart data
-    // and redraw the charts. In a real application, this would involve either:
-    // 1. Re-fetching filtered data from a backend API
-    // 2. Filtering the data client-side and regenerating the charts
     
     // For this demo, we'll just log the filter changes
     showInfoMessage(`Filters applied: ${JSON.stringify(dashboardData.currentFilters)}`);

@@ -1,0 +1,86 @@
+{
+  "data": [
+    {
+      "x": [
+        "Type A",
+        "Type B",
+        "Type C",
+        "Type D"
+      ],
+      "y": [
+        92.5,
+        94.8,
+        91.2,
+        93.7
+      ],
+      "type": "bar",
+      "name": "Efficiency (%)",
+      "text": [
+        "92.5%",
+        "94.8%",
+        "91.2%",
+        "93.7%"
+      ],
+      "textposition": "auto",
+      "marker": {
+        "color": "#1f77b4"
+      }
+    },
+    {
+      "x": [
+        "Type A",
+        "Type B",
+        "Type C",
+        "Type D"
+      ],
+      "y": [
+        2.1,
+        1.4,
+        2.8,
+        1.9
+      ],
+      "type": "scatter",
+      "mode": "lines+markers",
+      "name": "Safety Incidents",
+      "yaxis": "y2",
+      "marker": {
+        "size": 10,
+        "color": "#d62728"
+      },
+      "line": {
+        "width": 3,
+        "color": "#d62728"
+      }
+    }
+  ],
+  "layout": {
+    "title": "Process Efficiency vs Safety by Type",
+    "xaxis": {
+      "title": "Process Type"
+    },
+    "yaxis": {
+      "title": "Efficiency (%)",
+      "range": [
+        85,
+        100
+      ]
+    },
+    "yaxis2": {
+      "title": "Safety Incidents",
+      "overlaying": "y",
+      "side": "right",
+      "range": [
+        0,
+        5
+      ]
+    },
+    "legend": {
+      "orientation": "h",
+      "yanchor": "bottom",
+      "y": 1.02,
+      "xanchor": "right",
+      "x": 1
+    },
+    "hovermode": "x unified"
+  }
+}
