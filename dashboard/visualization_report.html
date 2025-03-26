@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOCAR Process Analysis Visualization Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2a5885;
+        }
+        .report-header {
+            background-color: #2a5885;
+            color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .timestamp {
+            font-size: 0.8em;
+            color: #f0f0f0;
+        }
+        .visualization-section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .viz-container {
+            width: 100%;
+            height: 600px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 0.9em;
+        }
+    </style>
+    <!-- Include Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="report-header">
+        <h1>SOCAR Process Analysis Visualization Report</h1>
+        <p class="timestamp">Generated on: 2025-03-26 14:15:40</p>
+    </div>
+    
+    <div class="visualization-sections">
+
+    <div class="visualization-section" id="process_efficiency">
+        <h2>Process Efficiency Analysis</h2>
+        <p>Analysis of process efficiency across different process types with comparison to safety incidents.</p>
+
+        <h3>Process Hierarchy</h3>
+        <div class="viz-container">
+            <iframe src="process_hierarchy.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+        <h3>Process Step Safety</h3>
+        <div class="viz-container">
+            <iframe src="process_step_safety.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+    </div>
+
+    <div class="visualization-section" id="energy_safety">
+        <h2>Energy and Safety Relationship</h2>
+        <p>Examination of the relationship between energy consumption and safety incidents.</p>
+
+        <h3>Energy Safety</h3>
+        <div class="viz-container">
+            <iframe src="energy_safety.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+    </div>
+
+    <div class="visualization-section" id="process_hierarchy">
+        <h2>Process Hierarchy</h2>
+        <p>Hierarchical view of process types and steps, showing efficiency distribution and volume.</p>
+
+        <h3>Process Hierarchy</h3>
+        <div class="viz-container">
+            <iframe src="process_hierarchy.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+        <h3>Process Step Safety</h3>
+        <div class="viz-container">
+            <iframe src="process_step_safety.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+    </div>
+
+    <div class="visualization-section" id="catalyst_analysis">
+        <h2>Catalyst Performance Analysis</h2>
+        <p>Comparative analysis of different catalysts and their impact on process performance.</p>
+
+        <h3>Catalyst Matrix</h3>
+        <div class="viz-container">
+            <iframe src="catalyst_matrix.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+        <h3>Catalyst Parallel</h3>
+        <div class="viz-container">
+            <iframe src="catalyst_parallel.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+    </div>
+
+    <div class="visualization-section" id="parameter_correlation">
+        <h2>Parameter Correlation Analysis</h2>
+        <p>Correlation analysis between different process parameters and their impact on efficiency.</p>
+
+        <h3>Parameter Correlation</h3>
+        <div class="viz-container">
+            <iframe src="parameter_correlation.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+    </div>
+
+    <div class="visualization-section" id="roi_projection">
+        <h2>ROI Projection Analysis</h2>
+        <p>Projection of potential return on investment for process improvements.</p>
+
+    </div>
+
+    <div class="visualization-section" id="safety_optimization">
+        <h2>Safety Optimization Analysis</h2>
+        <p>Analysis of safety incidents based on process parameters for optimization opportunities.</p>
+
+        <h3>Safety Heatmap</h3>
+        <div class="viz-container">
+            <iframe src="safety_heatmap.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+    </div>
+
+    <div class="visualization-section" id="kpi_dashboard">
+        <h2>KPI Dashboard</h2>
+        <p>Summary dashboard of key performance indicators across all processes.</p>
+
+        <h3>Kpi Dashboard</h3>
+        <div class="viz-container">
+            <iframe src="kpi_dashboard.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+
+    </div>
+
+    </div>
+    
+    <footer>
+        <p>SOCAR Process Analysis Visualization Report</p>
+        <p>Generated with Python and Plotly</p>
+    </footer>
+</body>
+</html>

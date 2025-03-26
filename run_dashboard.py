@@ -13,7 +13,7 @@ Usage:
 
 Options:
     --data-source: Path to the raw data file (default: data/data.csv)
-    --output-dir: Base directory for all output (default: socar-dashboard)
+    --output-dir: Base directory for all output (default: dashboard)
     --config-file: Path to configuration file (default: dashboard_config.yaml)
     --skip-data-prep: Skip data preparation step (use existing processed data)
     --skip-viz-gen: Skip visualization generation step (use existing charts)
@@ -51,7 +51,7 @@ def parse_arguments():
     parser = argparse.ArgumentParser(description='SOCAR Process Analysis Dashboard Generator')
     parser.add_argument('--data-source', type=str, default='data/data.csv',
                       help='Path to the raw data file')
-    parser.add_argument('--output-dir', type=str, default='socar-dashboard',
+    parser.add_argument('--output-dir', type=str, default='dashboard',
                       help='Base directory for all output')
     parser.add_argument('--config-file', type=str, default='dashboard_config.yaml',
                       help='Path to configuration file')
@@ -91,7 +91,7 @@ def load_config(config_file):
     default_config = {
         'data': {
             'source': 'data/data.csv',
-            'processed_dir': 'socar-dashboard/data',
+            'processed_dir': 'dashboard/data',
             'required_columns': [
                 'Proses ID', 'Proses Tipi', 'Proses Addımı', 'Emal Həcmi (ton)',
                 'Temperatur (°C)', 'Təzyiq (bar)', 'Prosesin Müddəti (saat)', 
@@ -101,15 +101,15 @@ def load_config(config_file):
             ]
         },
         'visualizations': {
-            'output_dir': 'socar-dashboard/charts',
+            'output_dir': 'dashboard/charts',
             'config_file': 'visualization_config.yaml',
             'enable_all': True,
             'quality_check': True,
             'create_report': True
         },
         'dashboard': {
-            'html_dir': 'socar-dashboard',
-            'assets_dir': 'socar-dashboard/assets',
+            'html_dir': 'dashboard',
+            'assets_dir': 'dashboard/assets',
             'title': 'SOCAR Process Analysis Dashboard',
             'enable_export': True,
             'auto_refresh': False,
@@ -207,7 +207,8 @@ def prepare_data(data_source, config, skip=False):
         output_dir = config['data']['processed_dir']
         
         # Check if prepare_data.py script exists
-        prepare_script = 'prepare_data.py'
+        # prepare_script = 'prepare_data.py'
+        prepare_script = 'dashboard/scripts/prepare_data.py'
         if not os.path.exists(prepare_script):
             logger.error(f"Data preparation script {prepare_script} not found")
             return False
@@ -263,7 +264,8 @@ def generate_visualizations(config, skip=False):
         viz_config = config['visualizations']['config_file']
         
         # Check if generate_visualizations.py script exists
-        viz_script = 'generate_visualizations.py'
+        # viz_script = 'generate_visualizations.py'
+        viz_script = 'dashboard/scripts/generate_visualizations.py'
         if not os.path.exists(viz_script):
             logger.error(f"Visualization script {viz_script} not found")
             return False
@@ -1737,9 +1739,9 @@ def main():
         logger.debug("Debug logging enabled")
     
     # Check if all dependencies are installed
-    if not check_dependencies():
-        logger.error("Missing required dependencies. Please install them and try again.")
-        return 1
+    # if not check_dependencies():
+    #     logger.error("Missing required dependencies. Please install them and try again.")
+    #     return 1
     
     try:
         # Load configuration

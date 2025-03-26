@@ -1,0 +1,11 @@
+{
+    "checks_performed": 4,
+    "all_files_present": false,
+    "file_sizes_ok": true,
+    "json_validity": true,
+    "html_validity": true,
+    "issues_found": [
+        "Missing files: ['process.html', 'process.json', 'energy.html', 'energy.json', 'process.html', 'process.json', 'catalyst.html', 'catalyst.json', 'parameter.html', 'parameter.json', 'roi.html', 'roi.json', 'safety.html', 'safety.json', 'kpi.html', 'kpi.json']",
+        "Missing Plotly script: dashboard_index.html"
+    ]
+}
