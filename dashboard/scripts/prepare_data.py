@@ -879,9 +879,9 @@ def load_config(config_file: str = 'data_config.yaml') -> Dict:
             logger.info(f"Configuration file {config_file} not found, using defaults")
             
             # Save default config as template
-            with open(f"{config_file}.template", 'w') as f:
-                yaml.dump(default_config, f, default_flow_style=False)
-            logger.info(f"Saved default configuration template to {config_file}.template")
+            # with open(f"{config_file}.template", 'w') as f:
+            #     yaml.dump(default_config, f, default_flow_style=False)
+            # logger.info(f"Saved default configuration template to {config_file}.template")
     except Exception as e:
         logger.error(f"Error loading configuration: {e}")
         logger.info("Using default configuration")
