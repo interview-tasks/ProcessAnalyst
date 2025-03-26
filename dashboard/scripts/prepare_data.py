@@ -889,7 +889,7 @@ def load_config(config_file: str = 'data_config.yaml') -> Dict:
     return config
 
 @timer_decorator    
-def run_analysis(input_file: str, output_dir: str = 'socar-dashboard/data', config_file: str = 'data_config.yaml') -> Tuple[pd.DataFrame, Dict[str, pd.DataFrame]]:
+def run_analysis(input_file: str, output_dir: str = 'dashboard/data', config_file: str = 'data_config.yaml') -> Tuple[pd.DataFrame, Dict[str, pd.DataFrame]]:
     """
     Run the complete analysis pipeline
     
@@ -955,9 +955,9 @@ def run_analysis(input_file: str, output_dir: str = 'socar-dashboard/data', conf
 def parse_arguments():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description='SOCAR Process Analysis Data Preparation')
-    parser.add_argument('--input', '-i', type=str, default='data/data.csv',
+    parser.add_argument('--input', '-i', type=str, default='dashboard/data/data.csv',
                        help='Path to the input CSV file')
-    parser.add_argument('--output', '-o', type=str, default='socar-dashboard/data',
+    parser.add_argument('--output', '-o', type=str, default='dashboard/data',
                        help='Directory to save processed data')
     parser.add_argument('--config', '-c', type=str, default='data_config.yaml',
                        help='Path to the configuration file')

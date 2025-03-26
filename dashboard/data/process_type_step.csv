@@ -1,0 +1,7 @@
+Proses Tipi,Proses Addımı,Emalın Səmərəliliyi (%)_mean,Energy_per_ton_mean,Has_Incident_mean,Emal Həcmi (ton)_sum
+Kimya Emalı,Polimerizasiya,98.25,1.481844242713808,0.0,252500
+Kimya Emalı,Sintetik Yanacaq,84.5,2.0,1.0,107500
+Neft Emalı,Distillə,96.5,2.02811004784689,1.0,205000
+Neft Emalı,Katalitik Kraker,93.5,1.668154761904762,1.0,300000
+Qaz Emalı,Kondensasiya,92.5,1.7037732198142412,0.75,180000
+Qaz Emalı,Nəzarət Krakeri,89.5,1.4166666666666665,0.0,90000

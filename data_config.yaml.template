@@ -1,0 +1,153 @@
+aggregations:
+  process_steps:
+    group_by:
+    - "Proses Add\u0131m\u0131"
+    metrics:
+      "Emal H\u0259cmi (ton)":
+      - sum
+      "Emal\u0131n S\u0259m\u0259r\u0259liliyi (%)":
+      - mean
+      Energy_per_ton:
+      - mean
+      "Prosesin M\xFCdd\u0259ti (saat)":
+      - mean
+      "Temperatur (\xB0C)":
+      - mean
+      "T\u0259hl\xFCk\u0259sizlik Hadis\u0259l\u0259ri":
+      - sum
+      "T\u0259zyiq (bar)":
+      - mean
+  process_type_step:
+    group_by:
+    - Proses Tipi
+    - "Proses Add\u0131m\u0131"
+    metrics:
+      "Emal H\u0259cmi (ton)":
+      - sum
+      "Emal\u0131n S\u0259m\u0259r\u0259liliyi (%)":
+      - mean
+      Energy_per_ton:
+      - mean
+      Has_Incident:
+      - mean
+  process_types:
+    group_by:
+    - Proses Tipi
+    metrics:
+      "Emal H\u0259cmi (ton)":
+      - sum
+      "Emal\u0131n S\u0259m\u0259r\u0259liliyi (%)":
+      - mean
+      Energy_per_ton:
+      - mean
+      "Enerji \u0130stifad\u0259si (kWh)":
+      - sum
+      Has_Incident:
+      - mean
+      "T\u0259hl\xFCk\u0259sizlik Hadis\u0259l\u0259ri":
+      - sum
+  safety_parameters:
+    group_by:
+    - Temperature_Category
+    - Pressure_Category
+    metrics:
+      "Emal H\u0259cmi (ton)":
+      - sum
+      Has_Incident:
+      - mean
+      "T\u0259hl\xFCk\u0259sizlik Hadis\u0259l\u0259ri":
+      - sum
+critical_columns:
+- Proses Tipi
+- "Proses Add\u0131m\u0131"
+- "Emal H\u0259cmi (ton)"
+- "Enerji \u0130stifad\u0259si (kWh)"
+derived_metrics:
+  CO2_per_ton: {}
+  Cost_Efficiency: {}
+  Cost_per_ton: {}
+  Duration_Category:
+    bins:
+    - 0
+    - 8
+    - 12
+    - 16
+    - .inf
+    labels:
+    - Short (<8h)
+    - Medium (8-12h)
+    - Long (12-16h)
+    - Extended (>16h)
+  Energy_Efficiency: {}
+  Energy_per_ton: {}
+  Environmental_Impact: {}
+  Has_Incident: {}
+  Material_Productivity: {}
+  Pressure_Category:
+    bins:
+    - 0
+    - 10
+    - 30
+    - 50
+    - .inf
+    labels:
+    - Low (<10 bar)
+    - Medium (10-30 bar)
+    - High (30-50 bar)
+    - Very High (>50 bar)
+  Process_KPI_Score:
+    weights:
+      cost: 0.2
+      efficiency: 0.3
+      energy: 0.2
+      environmental: 0.1
+      safety: 0.2
+  Processing_Speed: {}
+  Safety_Risk: {}
+  Temperature_Category:
+    bins:
+    - 0
+    - 150
+    - 300
+    - 450
+    - .inf
+    labels:
+    - "Low (<150\xB0C)"
+    - "Medium (150-300\xB0C)"
+    - "High (300-450\xB0C)"
+    - "Very High (>450\xB0C)"
+  Worker_Productivity: {}
+expected_column_types:
+  "Emal H\u0259cmi (ton)": float
+  "Emal\u0131n S\u0259m\u0259r\u0259liliyi (%)": float
+  "Enerji \u0130stifad\u0259si (kWh)": float
+  "Prosesin M\xFCdd\u0259ti (saat)": float
+  "Temperatur (\xB0C)": float
+  "T\u0259hl\xFCk\u0259sizlik Hadis\u0259l\u0259ri": float
+  "T\u0259zyiq (bar)": float
+  "\u018Fm\u0259liyyat X\u0259rcl\u0259ri (AZN)": float
+  "\u018Ftraf M\xFChit\u0259 T\u0259sir (g CO2 ekvivalent)": float
+font_scale: 1.2
+plot_context: notebook
+plot_style: whitegrid
+plots:
+  catalyst_performance: true
+  energy_vs_efficiency: true
+  incident_rate_by_type: true
+  kpi_distribution: true
+  parameter_correlation: true
+  process_efficiency_by_type: true
+  temp_pressure_safety: true
+required_columns:
+- Proses ID
+- Proses Tipi
+- "Proses Add\u0131m\u0131"
+- "Emal H\u0259cmi (ton)"
+- "Temperatur (\xB0C)"
+- "T\u0259zyiq (bar)"
+- "Prosesin M\xFCdd\u0259ti (saat)"
+- "Emal\u0131n S\u0259m\u0259r\u0259liliyi (%)"
+- "Enerji \u0130stifad\u0259si (kWh)"
+- "\u018Ftraf M\xFChit\u0259 T\u0259sir (g CO2 ekvivalent)"
+- "T\u0259hl\xFCk\u0259sizlik Hadis\u0259l\u0259ri"
+- "\u018Fm\u0259liyyat X\u0259rcl\u0259ri (AZN)"

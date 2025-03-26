@@ -1896,9 +1896,9 @@ def generate_all_visualizations(
 def parse_arguments():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description='SOCAR Process Analysis Visualization Generator')
-    parser.add_argument('--data-dir', '-d', type=str, default='socar-dashboard/data',
+    parser.add_argument('--data-dir', '-d', type=str, default='dashboard/data',
                        help='Directory containing the processed data files')
-    parser.add_argument('--output-dir', '-o', type=str, default='socar-dashboard/charts',
+    parser.add_argument('--output-dir', '-o', type=str, default='dashboard/charts',
                        help='Directory to save visualizations')
     parser.add_argument('--config', '-c', type=str, default='visualization_config.yaml',
                        help='Path to the configuration file')
@@ -2673,9 +2673,9 @@ def main():
 def parse_arguments():
     """Parse command line arguments with more options"""
     parser = argparse.ArgumentParser(description='SOCAR Process Analysis Visualization Generator')
-    parser.add_argument('--data-dir', '-d', type=str, default='socar-dashboard/data',
+    parser.add_argument('--data-dir', '-d', type=str, default='dashboard/data',
                        help='Directory containing the processed data files')
-    parser.add_argument('--output-dir', '-o', type=str, default='socar-dashboard/charts',
+    parser.add_argument('--output-dir', '-o', type=str, default='dashboard/charts',
                        help='Directory to save visualizations')
     parser.add_argument('--config', '-c', type=str, default='visualization_config.yaml',
                        help='Path to the configuration file')
