@@ -1805,3 +1805,10 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+    
+# python run_dashboard.py \
+#   --data-source dashboard/data/data.csv \
+#   --output-dir dashboard \
+#   --config-file dashboard_config.yaml \
+#   --report \
+#   --clean
