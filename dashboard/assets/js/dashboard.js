@@ -10,12 +10,12 @@ const config = {
     processDependencies: {
         overview: ['process_efficiency.json', 'energy_safety.json', 'roi_by_process.json'],
         efficiency: ['process_hierarchy.json', 'efficiency_correlation.json'],
-        energy: ['energy_safety.json'],
+        energy: ['energy_safety.json', 'energy_by_process.json', 'energy_parameters.json'],
         safety: ['safety_heatmap.json', 'process_step_safety.json'],
         catalyst: ['catalyst_matrix.json', 'catalyst_parallel.json'],
-        parameter: ['parameter_correlation.json'],
+        parameter: ['parameter_correlation.json', 'temp_pressure.json', 'duration_impact.json'],
         roi: ['roi_by_process.json'],
-        quality: []
+        quality: ['kpi_dashboard.json']
     },
     chartContainers: {
         // Overview section
@@ -449,33 +449,31 @@ function renderCharts(section) {
                     throw new Error(`Invalid chart data structure for ${chartFile}`);
                 }
                 
-                // Try to render the chart
-                setTimeout(() => {
-                    try {
-                        Plotly.newPlot(containerId, chartData.data, chartData.layout, {
-                            responsive: true,
-                            displayModeBar: true,
-                            displaylogo: false,
-                            modeBarButtonsToRemove: ['lasso2d', 'select2d']
-                        });
-                        renderedCount++;
-                        console.log(`Successfully rendered chart: ${containerId}`);
-                    } catch (error) {
-                        console.error(`Error rendering chart ${containerId}:`, error);
-                        containerElement.innerHTML = `
-                            <div class="alert alert-danger">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                Failed to render chart: ${error.message}
-                            </div>
-                        `;
-                    }
-                }, 100); // Short timeout to let the DOM update
+                // Try to render the chart immediately instead of using setTimeout
+                try {
+                    Plotly.newPlot(containerId, chartData.data, chartData.layout, {
+                        responsive: true,
+                        displayModeBar: true,
+                        displaylogo: false,
+                        modeBarButtonsToRemove: ['lasso2d', 'select2d']
+                    });
+                    renderedCount++;
+                    console.log(`Successfully rendered chart: ${containerId}`);
+                } catch (error) {
+                    console.error(`Error rendering chart ${containerId}:`, error);
+                    containerElement.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            Failed to render chart: ${error.message}
+                        </div>
+                    `;
+                }
             } else {
                 // Try to load the chart data
                 fetch(`${config.chartsPath}${chartFile}`)
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
+                            throw new Error(`HTTP error! status: ${response.status} for ${chartFile}`);
                         }
                         return response.json();
                     })
@@ -995,43 +993,60 @@ function calculateROI(processType, implementationCost, efficiencyImprovement, en
 /**
  * Set up event listeners
  */
+// Replace the sidebar toggle functionality in setupEventListeners
 function setupEventListeners() {
     // Toggle sidebar on mobile
     const toggleSidebarBtn = document.getElementById('toggle-sidebar');
     if (toggleSidebarBtn) {
         toggleSidebarBtn.addEventListener('click', function() {
-            document.querySelector('.sidebar')?.classList.toggle('show');
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('show');
+                document.body.classList.toggle('sidebar-shown');
+                
+                // Change button text/icon based on state
+                const icon = this.querySelector('i');
+                if (icon) {
+                    if (sidebar.classList.contains('show')) {
+                        icon.classList.remove('bi-layout-sidebar');
+                        icon.classList.add('bi-layout-sidebar-inset');
+                        this.setAttribute('title', 'Hide Sidebar');
+                    } else {
+                        icon.classList.remove('bi-layout-sidebar-inset');
+                        icon.classList.add('bi-layout-sidebar');
+                        this.setAttribute('title', 'Show Sidebar');
+                    }
+                }
+            }
+        });
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.querySelector('.sidebar');
+            const sidebarBtn = document.getElementById('toggle-sidebar');
+            
+            if (window.innerWidth <= 767.98 && 
+                sidebar && 
+                sidebar.classList.contains('show') &&
+                !sidebar.contains(event.target) && 
+                sidebarBtn !== event.target &&
+                !sidebarBtn.contains(event.target)) {
+                
+                sidebar.classList.remove('show');
+                document.body.classList.remove('sidebar-shown');
+                
+                // Reset button
+                const icon = sidebarBtn.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('bi-layout-sidebar-inset');
+                    icon.classList.add('bi-layout-sidebar');
+                }
+            }
         });
     }
     
-    // Fullscreen button
-    const fullscreenBtn = document.getElementById('fullscreen-btn');
-    if (fullscreenBtn) {
-        fullscreenBtn.addEventListener('click', toggleFullscreen);
-    }
-    
-    // Export buttons
-    document.getElementById('export-pdf')?.addEventListener('click', () => showNotification('PDF export functionality would be implemented here'));
-    document.getElementById('export-png')?.addEventListener('click', exportCurrentChartAsPNG);
-    document.getElementById('export-csv')?.addEventListener('click', () => showNotification('CSV export functionality would be implemented here'));
-    document.getElementById('export-all-zip')?.addEventListener('click', () => showNotification('ZIP export functionality would be implemented here'));
-    
-    // Summary toggle
-    document.getElementById('toggle-summary')?.addEventListener('click', function() {
-        const summaryContents = document.getElementById('summary-contents');
-        if (summaryContents) {
-            const isVisible = summaryContents.style.display !== 'none';
-            summaryContents.style.display = isVisible ? 'none' : 'block';
-            this.textContent = isVisible ? 'Show Details' : 'Hide Details';
-        }
-    });
-    
-    // Refresh data button
-    document.getElementById('refresh-data')?.addEventListener('click', refreshDashboard);
-    
-    // Add any other event listeners here
+    // Add the rest of your event listeners here...
 }
-
 /**
  * Export current chart as PNG
  */
@@ -1070,19 +1085,128 @@ function exportCurrentChartAsPNG() {
 /**
  * Toggle fullscreen mode
  */
+/**
+ * Toggle fullscreen mode with better browser compatibility
+ */
 function toggleFullscreen() {
     const mainElement = document.querySelector('main');
     if (!mainElement) return;
     
-    if (!document.fullscreenElement) {
-        mainElement.requestFullscreen().catch(err => {
-            showErrorMessage(`Error attempting to enable fullscreen: ${err.message}`);
-        });
+    // Check if browser supports fullscreen
+    if (!document.fullscreenEnabled && 
+        !document.webkitFullscreenEnabled && 
+        !document.mozFullScreenEnabled && 
+        !document.msFullscreenEnabled) {
+        
+        // Use CSS-based fullscreen as fallback
+        mainElement.classList.toggle('fullscreen');
+        
+        // Update button icon
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        if (fullscreenBtn) {
+            const icon = fullscreenBtn.querySelector('i');
+            if (icon) {
+                if (mainElement.classList.contains('fullscreen')) {
+                    icon.classList.remove('bi-fullscreen');
+                    icon.classList.add('bi-fullscreen-exit');
+                    
+                    // When in CSS fullscreen, add an exit button at the top
+                    const exitBtn = document.createElement('button');
+                    exitBtn.className = 'btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-2';
+                    exitBtn.innerHTML = '<i class="bi bi-fullscreen-exit"></i> Exit Fullscreen';
+                    exitBtn.id = 'exit-fullscreen-btn';
+                    exitBtn.addEventListener('click', toggleFullscreen);
+                    mainElement.appendChild(exitBtn);
+                    
+                    // Update Plotly charts to use the new space
+                    setTimeout(() => {
+                        const chartContainers = mainElement.querySelectorAll('[id$="-chart"]');
+                        chartContainers.forEach(container => {
+                            if (container.classList.contains('js-plotly-plot')) {
+                                Plotly.relayout(container.id, {
+                                    autosize: true
+                                });
+                            }
+                        });
+                    }, 100);
+                    
+                } else {
+                    icon.classList.remove('bi-fullscreen-exit');
+                    icon.classList.add('bi-fullscreen');
+                    
+                    // Remove the exit button
+                    const exitBtn = document.getElementById('exit-fullscreen-btn');
+                    if (exitBtn) {
+                        exitBtn.remove();
+                    }
+                    
+                    // Update Plotly charts to use the new space
+                    setTimeout(() => {
+                        const chartContainers = mainElement.querySelectorAll('[id$="-chart"]');
+                        chartContainers.forEach(container => {
+                            if (container.classList.contains('js-plotly-plot')) {
+                                Plotly.relayout(container.id, {
+                                    autosize: true
+                                });
+                            }
+                        });
+                    }, 100);
+                }
+            }
+        }
+        
+        return;
+    }
+    
+    // Use browser's native fullscreen API
+    if (!document.fullscreenElement && 
+        !document.webkitFullscreenElement && 
+        !document.mozFullScreenElement && 
+        !document.msFullscreenElement) {
+        
+        // Request fullscreen
+        if (mainElement.requestFullscreen) {
+            mainElement.requestFullscreen();
+        } else if (mainElement.webkitRequestFullscreen) { // Safari
+            mainElement.webkitRequestFullscreen();
+        } else if (mainElement.mozRequestFullScreen) { // Firefox
+            mainElement.mozRequestFullScreen();
+        } else if (mainElement.msRequestFullscreen) { // IE/Edge
+            mainElement.msRequestFullscreen();
+        }
+        
+        // Update button icon
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        if (fullscreenBtn) {
+            const icon = fullscreenBtn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('bi-fullscreen');
+                icon.classList.add('bi-fullscreen-exit');
+            }
+        }
     } else {
-        document.exitFullscreen();
+        // Exit fullscreen
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { // Safari
+            document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) { // Firefox
+            document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) { // IE/Edge
+            document.msExitFullscreen();
+        }
+        
+        // Update button icon
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        if (fullscreenBtn) {
+            const icon = fullscreenBtn.querySelector('i');
+            if (icon) {
+                icon.classList.remove('bi-fullscreen-exit');
+                icon.classList.add('bi-fullscreen');
+            }
+        }
     }
 }
-
 /**
  * Refresh the dashboard
  */
@@ -1154,33 +1278,228 @@ function showNotification(message) {
 /**
  * Show an error message
  */
-function showErrorMessage(message) {
-    const container = document.createElement('div');
-    container.className = 'toast align-items-center text-white bg-danger border-0 position-fixed top-0 start-50 translate-middle-x mt-3';
-    container.style.zIndex = '9999';
-    container.setAttribute('role', 'alert');
-    container.setAttribute('aria-live', 'assertive');
-    container.setAttribute('aria-atomic', 'true');
-    container.innerHTML = `
+
+/**
+ * Enhanced logging function to track issues
+ */
+function logDebug(message, data = null) {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${message}`;
+    
+    if (data) {
+        console.log(logMessage, data);
+    } else {
+        console.log(logMessage);
+    }
+    
+    // Could be extended to store logs in localStorage for debugging
+    const logs = JSON.parse(localStorage.getItem('dashboardLogs') || '[]');
+    logs.push({ timestamp, message, data: data ? JSON.stringify(data).substring(0, 500) : null });
+    
+    // Keep only last 100 logs
+    if (logs.length > 100) {
+        logs.shift();
+    }
+    
+    localStorage.setItem('dashboardLogs', JSON.stringify(logs));
+}
+
+/**
+ * Show improved error notifications
+ */
+function showErrorMessage(message, details = null) {
+    // Log the error for debugging
+    logDebug(`ERROR: ${message}`, details);
+    
+    // Create toast container if it doesn't exist
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.className = 'position-fixed top-0 end-0 p-3';
+        container.style.zIndex = '1100';
+        document.body.appendChild(container);
+    }
+    
+    // Create toast element
+    const toastId = `error-toast-${Date.now()}`;
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-white bg-danger border-0';
+    toast.id = toastId;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.setAttribute('data-bs-delay', '8000');
+    
+    // Add details disclosure if provided
+    let detailsHtml = '';
+    if (details) {
+        detailsHtml = `
+            <div class="mt-2">
+                <a class="text-white" data-bs-toggle="collapse" href="#details-${toastId}" role="button" aria-expanded="false">
+                    <small><i class="bi bi-info-circle"></i> Show Details</small>
+                </a>
+                <div class="collapse mt-1" id="details-${toastId}">
+                    <div class="card card-body bg-danger bg-opacity-75 p-2">
+                        <small class="text-white">${typeof details === 'object' ? JSON.stringify(details) : details}</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Toast content
+    toast.innerHTML = `
         <div class="d-flex">
             <div class="toast-body">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 ${message}
+                ${detailsHtml}
             </div>
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     `;
     
-    document.body.appendChild(container);
+    // Add to container
+    container.appendChild(toast);
     
     // Initialize and show toast
-    const toast = new bootstrap.Toast(container, { delay: 5000 });
-    toast.show();
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
     
-    // Remove after hiding
-    container.addEventListener('hidden.bs.toast', function() {
-        document.body.removeChild(container);
+    // Remove from DOM after hiding
+    toast.addEventListener('hidden.bs.toast', function() {
+        toast.remove();
     });
+    
+    return toastId;
+}
+
+/**
+ * Add a debug mode toggle in footer for troubleshooting
+ * Add this to the setupEventListeners function
+ */
+function setupDebugMode() {
+    // Add debug toggle link in footer
+    const footerContainer = document.querySelector('.footer .container');
+    if (footerContainer) {
+        const debugLink = document.createElement('div');
+        debugLink.className = 'mt-1';
+        debugLink.innerHTML = `<a href="#" id="toggle-debug-mode" class="small text-muted"><i class="bi bi-bug"></i> Debug Mode</a>`;
+        footerContainer.appendChild(debugLink);
+        
+        // Toggle debug mode
+        document.getElementById('toggle-debug-mode').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Toggle debug mode
+            const isDebugMode = localStorage.getItem('debugMode') === 'true';
+            localStorage.setItem('debugMode', !isDebugMode);
+            
+            // Show notification
+            showNotification(`Debug mode ${!isDebugMode ? 'enabled' : 'disabled'}`);
+            
+            // If enabling debug mode, show debug panel
+            if (!isDebugMode) {
+                showDebugPanel();
+            } else {
+                // Remove debug panel if exists
+                const debugPanel = document.getElementById('debug-panel');
+                if (debugPanel) {
+                    debugPanel.remove();
+                }
+            }
+        });
+    }
+}
+
+/**
+ * Show debug panel with log information
+ */
+function showDebugPanel() {
+    // Create debug panel
+    let debugPanel = document.getElementById('debug-panel');
+    
+    if (!debugPanel) {
+        debugPanel = document.createElement('div');
+        debugPanel.id = 'debug-panel';
+        debugPanel.className = 'card position-fixed bottom-0 end-0 m-3';
+        debugPanel.style.zIndex = '1050';
+        debugPanel.style.maxWidth = '500px';
+        debugPanel.style.maxHeight = '300px';
+        debugPanel.style.opacity = '0.9';
+        
+        debugPanel.innerHTML = `
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-bug"></i> Debug Panel</span>
+                <div>
+                    <button class="btn btn-sm btn-outline-light me-2" id="refresh-debug">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-light" id="close-debug">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0" style="overflow-y: auto; max-height: 250px;">
+                <div class="list-group list-group-flush" id="debug-log-list">
+                    <div class="list-group-item text-center">
+                        <small class="text-muted">Loading logs...</small>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(debugPanel);
+        
+        // Add event listeners
+        document.getElementById('close-debug').addEventListener('click', function() {
+            debugPanel.remove();
+        });
+        
+        document.getElementById('refresh-debug').addEventListener('click', function() {
+            refreshDebugLogs();
+        });
+        
+        // Load initial logs
+        refreshDebugLogs();
+    }
+}
+
+/**
+ * Refresh debug logs in the debug panel
+ */
+function refreshDebugLogs() {
+    const logList = document.getElementById('debug-log-list');
+    if (!logList) return;
+    
+    // Get logs from localStorage
+    const logs = JSON.parse(localStorage.getItem('dashboardLogs') || '[]');
+    
+    if (logs.length === 0) {
+        logList.innerHTML = `
+            <div class="list-group-item text-center">
+                <small class="text-muted">No logs available</small>
+            </div>
+        `;
+        return;
+    }
+    
+    // Display logs in reverse order (newest first)
+    logList.innerHTML = logs.slice().reverse().map(log => {
+        const time = new Date(log.timestamp).toLocaleTimeString();
+        const isError = log.message.startsWith('ERROR');
+        
+        return `
+            <div class="list-group-item p-2 ${isError ? 'list-group-item-danger' : ''}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <small>${log.message}</small>
+                    <small class="text-muted ms-2">${time}</small>
+                </div>
+                ${log.data ? `<small class="d-block text-truncate mt-1 text-muted">${log.data}</small>` : ''}
+            </div>
+        `;
+    }).join('');
 }
 
 /**

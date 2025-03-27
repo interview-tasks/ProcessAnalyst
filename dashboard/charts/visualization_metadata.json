@@ -1,5 +1,5 @@
 {
-    "visualization_timestamp": "2025-03-27 20:54:44",
+    "visualization_timestamp": "2025-03-27 21:59:53",
     "data_directory": "dashboard/data",
     "output_directory": "dashboard/charts",
     "config_file": "visualization_config.yaml",
@@ -20,5 +20,5 @@
         "kpi_dashboard",
         "efficiency_correlation"
     ],
-    "execution_time_seconds": 0.68
+    "execution_time_seconds": 0.69
 }
