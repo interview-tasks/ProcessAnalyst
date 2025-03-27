@@ -1640,8 +1640,8 @@ def create_temp_pressure(
         #     efficiency_col = "Emalın Səmərəliliyi (%)"
         # elif "Process_KPI_Score" in df.columns:
         #     efficiency_col = "Process_KPI_Score"
-        efficiency_col = next((col for col in ["Emalın Səmərəliliyi (%)", "Emalın Səmərəliliyi (%)_mean"]
-                               if col in process_data.columns), None)
+        efficiency_col = next((col for col in ["Emalın Səmərəliliyi (%)", "Process_KPI_Score"]
+                               if col in df.columns), None)
         
         # Create scatter plot with process types
         fig = go.Figure()
