@@ -371,7 +371,14 @@ def create_process_efficiency_comparison(
             # Flatten columns
             process_data.columns = ["Proses Tipi", "Efficiency_Mean", "Efficiency_Std", "Volume", "Incidents"]
             process_data["Emalın Səmərəliliyi (%)"] = process_data["Efficiency_Mean"]
-        
+
+        # After determining the dataset to use
+        # Check for efficiency column with different name patterns
+        efficiency_col = next((col for col in ["Emalın Səmərəliliyi (%)", "Emalın Səmərəliliyi (%)_mean"] 
+                            if col in process_data.columns), None)
+        if efficiency_col and efficiency_col != "Emalın Səmərəliliyi (%)":
+            process_data["Emalın Səmərəliliyi (%)"] = process_data[efficiency_col]
+
         # Check if we have the minimum required columns
         required_cols = ["Proses Tipi", "Emalın Səmərəliliyi (%)"]
         missing_cols = [col for col in required_cols if col not in process_data.columns]
@@ -614,6 +621,11 @@ def create_process_hierarchy(
         # Get the main dataset
         df = datasets["df"]
         
+        # In create_process_efficiency_comparison
+        efficiency_col = next((col for col in ["Emalın Səmərəliliyi (%)", "Emalın Səmərəliliyi (%)_mean"] 
+                            if col in df.columns), None)
+        if efficiency_col:
+            df["Emalın Səmərəliliyi (%)"] = df[efficiency_col]
         # Check if required columns exist
         required_cols = ["Proses Tipi", "Proses Addımı", "Emalın Səmərəliliyi (%)", "Emal Həcmi (ton)"]
         missing_cols = [col for col in required_cols if col not in df.columns]
@@ -753,7 +765,10 @@ def create_safety_heatmap(
             raise ValueError(f"Missing required columns for safety heatmap: {missing_cols}")
         
         # Determine the incident measure to use
-        incident_cols = ['Incident_Rate', 'Has_Incident_mean', 'Təhlükəsizlik Hadisələri']
+        # incident_cols = ['Incident_Rate', 'Has_Incident_mean', 'Təhlükəsizlik Hadisələri']
+
+        incident_cols = ['Incident_Rate', 'Has_Incident_mean', 'Təhlükəsizlik Hadisələri', 
+                        'Təhlükəsizlik Hadisələri_sum']
         incident_col = next((col for col in incident_cols if col in safety_data.columns), None)
         
         if not incident_col:
