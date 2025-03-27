@@ -9,9 +9,9 @@ This script prepares raw data for the process analysis dashboard by:
 4. Saving processed data files
 
 Usage:
-    python prepare_data.py [options]
     
 python dashboard/scripts/prepare_data.py --input dashboard/data/data.csv --output dashboard/data --no-plots
+
 """
 
 import pandas as pd

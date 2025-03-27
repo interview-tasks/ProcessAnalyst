@@ -8,8 +8,9 @@ This script generates visualizations for the process analysis dashboard:
 3. Saves visualizations in HTML and JSON formats for dashboard integration
 
 Usage:
-    python generate_visualizations.py [options]
-    python dashboard/scripts/generate_visualizations.py --data-dir dashboard/data --output-dir dashboard/charts
+
+python dashboard/scripts/generate_visualizations.py --data-dir dashboard/data --output-dir dashboard/charts
+
 """
 
 import pandas as pd
@@ -219,7 +220,12 @@ def load_config(config_file: str = 'visualization_config.yaml', create_template:
             'parameter_correlation': True,
             'roi_projection': True,
             'safety_optimization': True,
-            'kpi_dashboard': True
+            'kpi_dashboard': True,
+            'energy_by_process': True,
+            "energy_parameters": True,
+            "temp_pressure": True,
+            "duration_impact": True,
+            "efficiency_correlation": True,
         }
     }
     
@@ -1276,6 +1282,922 @@ def create_roi_projection(
         return fig
 
 @timer_decorator
+def create_energy_by_process(
+    datasets: Dict[str, pd.DataFrame], 
+    viz_manager: VisualizationManager
+) -> go.Figure:
+    """
+    Create energy consumption by process type visualization
+    
+    Args:
+        datasets: Dictionary of DataFrames
+        viz_manager: Visualization manager instance
+        
+    Returns:
+        Plotly figure
+    """
+    logger.info("Creating energy by process visualization")
+    
+    try:
+        # Determine the dataset to use
+        if "process_types" in datasets:
+            process_data = datasets["process_types"]
+            logger.info("Using process_types dataset for energy by process visualization")
+        else:
+            # Calculate from main dataset
+            df = datasets["df"]
+            
+            # Check if required columns exist
+            required_cols = ["Proses Tipi", "Emal Həcmi (ton)"]
+            missing_cols = [col for col in required_cols if col not in df.columns]
+            
+            # Check for energy columns
+            energy_col = None
+            if "Energy_per_ton" in df.columns:
+                energy_col = "Energy_per_ton"
+            elif "Enerji İstifadəsi (kWh)" in df.columns and "Emal Həcmi (ton)" in df.columns:
+                energy_col = "Enerji İstifadəsi (kWh)"
+                logger.info("Will calculate Energy_per_ton from raw energy consumption")
+            else:
+                missing_cols.append("Energy metric")
+            
+            if missing_cols:
+                raise ValueError(f"Cannot create energy by process visualization due to missing columns: {missing_cols}")
+            
+            # Calculate aggregated data
+            agg_dict = {"Emal Həcmi (ton)": "sum"}
+            if energy_col == "Energy_per_ton":
+                agg_dict[energy_col] = "mean"
+            else:  # energy_col == "Enerji İstifadəsi (kWh)"
+                agg_dict[energy_col] = "sum"
+            
+            process_data = df.groupby("Proses Tipi").agg(agg_dict).reset_index()
+            
+            # Calculate Energy_per_ton if needed
+            if energy_col == "Enerji İstifadəsi (kWh)":
+                process_data["Energy_per_ton"] = process_data[energy_col] / process_data["Emal Həcmi (ton)"]
+        
+        # Ensure we have Energy_per_ton
+        if "Energy_per_ton" not in process_data.columns:
+            # Try to find column with similar name
+            energy_cols = [col for col in process_data.columns if "energy" in col.lower() or "enerji" in col.lower()]
+            if energy_cols:
+                # Use the first match
+                process_data["Energy_per_ton"] = process_data[energy_cols[0]]
+                logger.info(f"Using {energy_cols[0]} as Energy_per_ton")
+            else:
+                raise ValueError("Energy_per_ton column not available for visualization")
+        
+        # Sort by energy consumption
+        process_data = process_data.sort_values(by="Energy_per_ton", ascending=False)
+        
+        # Create figure with bar chart
+        fig = go.Figure()
+        
+        # Add bar chart for energy consumption
+        fig.add_trace(go.Bar(
+            x=process_data["Proses Tipi"],
+            y=process_data["Energy_per_ton"],
+            name="Energy per Ton",
+            marker_color="#1f77b4",
+            text=process_data["Energy_per_ton"].round(2),
+            textposition="auto",
+            hovertemplate="<b>%{x}</b><br>Energy: %{y:.2f} kWh/ton<extra></extra>"
+        ))
+        
+        # Add volume as a line on secondary axis if available
+        if "Emal Həcmi (ton)" in process_data.columns:
+            fig.add_trace(go.Scatter(
+                x=process_data["Proses Tipi"],
+                y=process_data["Emal Həcmi (ton)"],
+                name="Processing Volume",
+                yaxis="y2",
+                line=dict(color="#ff7f0e", width=3),
+                marker=dict(size=10),
+                hovertemplate="<b>%{x}</b><br>Volume: %{y:.0f} tons<extra></extra>"
+            ))
+        
+        # Update layout
+        layout = {
+            "title": "Energy Consumption by Process Type",
+            "xaxis": {"title": "Process Type"},
+            "yaxis": {
+                "title": "Energy (kWh/ton)",
+                "rangemode": "nonnegative"
+            },
+            "height": 500,
+            "margin": dict(l=50, r=50, t=60, b=50),
+            "hovermode": "x unified"
+        }
+        
+        if "Emal Həcmi (ton)" in process_data.columns:
+            layout["yaxis2"] = {
+                "title": "Volume (tons)",
+                "overlaying": "y",
+                "side": "right",
+                "rangemode": "nonnegative"
+            }
+        
+        fig.update_layout(**layout)
+        
+        # Apply theme
+        fig = viz_manager.apply_theme(fig, 'bar')
+        
+        # Save visualization
+        viz_manager.save_visualization(fig, "energy_by_process")
+        
+        return fig
+    
+    except Exception as e:
+        logger.error(f"Error creating energy by process visualization: {e}")
+        # Create a minimal version to avoid breaking the dashboard
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error creating energy by process visualization: {str(e)}",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(color="red", size=14)
+        )
+        
+        # Save this error visualization
+        viz_manager.save_visualization(fig, "energy_by_process")
+        
+        return fig
+
+@timer_decorator
+def create_energy_parameters(
+    datasets: Dict[str, pd.DataFrame], 
+    viz_manager: VisualizationManager
+) -> go.Figure:
+    """
+    Create energy consumption vs temperature and pressure visualization
+    
+    Args:
+        datasets: Dictionary of DataFrames
+        viz_manager: Visualization manager instance
+        
+    Returns:
+        Plotly figure
+    """
+    logger.info("Creating energy vs parameters visualization")
+    
+    try:
+        # Get the main dataset
+        df = datasets["df"]
+        
+        # Check if required columns exist
+        required_cols = ["Temperatur (°C)", "Təzyiq (bar)"]
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        
+        # Check for energy column
+        if "Energy_per_ton" not in df.columns:
+            if "Enerji İstifadəsi (kWh)" in df.columns and "Emal Həcmi (ton)" in df.columns:
+                df["Energy_per_ton"] = df["Enerji İstifadəsi (kWh)"] / df["Emal Həcmi (ton)"]
+                logger.info("Created Energy_per_ton column from raw energy consumption")
+            else:
+                missing_cols.append("Energy_per_ton")
+        
+        if missing_cols:
+            raise ValueError(f"Cannot create energy vs parameters visualization due to missing columns: {missing_cols}")
+        
+        # Create figure with 3D scatter plot
+        fig = go.Figure(data=go.Scatter3d(
+            x=df["Temperatur (°C)"],
+            y=df["Təzyiq (bar)"],
+            z=df["Energy_per_ton"],
+            mode='markers',
+            marker=dict(
+                size=5,
+                color=df["Energy_per_ton"],
+                colorscale='Viridis',
+                opacity=0.8,
+                colorbar=dict(title="Energy (kWh/ton)")
+            ),
+            text=df["Proses Addımı"] if "Proses Addımı" in df.columns else None,
+            hovertemplate="<b>%{text}</b><br>" +
+                        "Temperature: %{x}°C<br>" +
+                        "Pressure: %{y} bar<br>" +
+                        "Energy: %{z:.2f} kWh/ton<extra></extra>"
+        ))
+        
+        # Update layout
+        fig.update_layout(
+            title="Energy Consumption vs Temperature and Pressure",
+            scene=dict(
+                xaxis_title="Temperature (°C)",
+                yaxis_title="Pressure (bar)",
+                zaxis_title="Energy Consumption (kWh/ton)",
+                aspectmode='cube'
+            ),
+            height=600,
+            margin=dict(l=50, r=50, t=60, b=50)
+        )
+        
+        # Apply basic theme elements (limited for 3D plots)
+        fig.update_layout(
+            font=viz_manager.config.get('theme', {}).get('font', {'family': 'Arial, sans-serif', 'size': 12}),
+            paper_bgcolor=viz_manager.config.get('theme', {}).get('paper_bgcolor', 'white')
+        )
+        
+        # Save visualization
+        viz_manager.save_visualization(fig, "energy_parameters")
+        
+        return fig
+    
+    except Exception as e:
+        logger.error(f"Error creating energy vs parameters visualization: {e}")
+        # Create a minimal version to avoid breaking the dashboard
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error creating energy vs parameters visualization: {str(e)}",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(color="red", size=14)
+        )
+        
+        # Save this error visualization
+        viz_manager.save_visualization(fig, "energy_parameters")
+        
+        return fig
+
+@timer_decorator
+def create_parameter_correlation(
+    datasets: Dict[str, pd.DataFrame], 
+    viz_manager: VisualizationManager
+) -> go.Figure:
+    """
+    Create parameter correlation matrix visualization
+    
+    Args:
+        datasets: Dictionary of DataFrames
+        viz_manager: Visualization manager instance
+        
+    Returns:
+        Plotly figure
+    """
+    logger.info("Creating parameter correlation matrix visualization")
+    
+    try:
+        # Get the main dataset
+        df = datasets["df"]
+        
+        # Select numeric columns for correlation
+        numeric_cols = [
+            'Temperatur (°C)', 'Təzyiq (bar)', 'Prosesin Müddəti (saat)',
+            'Emalın Səmərəliliyi (%)', 'Təhlükəsizlik Hadisələri'
+        ]
+        
+        # Add energy metrics if available
+        for col in ['Energy_per_ton', 'Enerji İstifadəsi (kWh)', 'CO2_per_ton', 'Cost_per_ton']:
+            if col in df.columns:
+                numeric_cols.append(col)
+        
+        # Filter to columns that exist in the dataset
+        available_cols = [col for col in numeric_cols if col in df.columns]
+        
+        if len(available_cols) < 3:
+            raise ValueError("Not enough numeric columns available for correlation matrix")
+        
+        # Calculate correlation matrix
+        corr_matrix = df[available_cols].corr()
+        
+        # Create heatmap
+        fig = go.Figure(data=go.Heatmap(
+            z=corr_matrix.values,
+            x=corr_matrix.columns,
+            y=corr_matrix.index,
+            colorscale='RdBu_r',
+            zmin=-1,
+            zmax=1,
+            text=np.round(corr_matrix.values, 2),
+            texttemplate="%{text}",
+            hovertemplate="X: %{x}<br>Y: %{y}<br>Correlation: %{z:.2f}<extra></extra>"
+        ))
+        
+        # Update layout
+        fig.update_layout(
+            title="Parameter Correlation Matrix",
+            height=600,
+            margin=dict(l=50, r=50, t=60, b=100),
+            xaxis=dict(tickangle=45)
+        )
+        
+        # Apply theme
+        fig = viz_manager.apply_theme(fig, 'heatmap')
+        
+        # Save visualization
+        viz_manager.save_visualization(fig, "parameter_correlation")
+        
+        return fig
+    
+    except Exception as e:
+        logger.error(f"Error creating parameter correlation matrix visualization: {e}")
+        # Create a minimal version to avoid breaking the dashboard
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error creating parameter correlation matrix visualization: {str(e)}",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(color="red", size=14)
+        )
+        
+        # Save this error visualization
+        viz_manager.save_visualization(fig, "parameter_correlation")
+        
+        return fig
+
+@timer_decorator
+def create_temp_pressure(
+    datasets: Dict[str, pd.DataFrame], 
+    viz_manager: VisualizationManager
+) -> go.Figure:
+    """
+    Create temperature-pressure relationship visualization
+    
+    Args:
+        datasets: Dictionary of DataFrames
+        viz_manager: Visualization manager instance
+        
+    Returns:
+        Plotly figure
+    """
+    logger.info("Creating temperature-pressure relationship visualization")
+    
+    try:
+        # Get the main dataset
+        df = datasets["df"]
+        
+        # Check if required columns exist
+        required_cols = ["Temperatur (°C)", "Təzyiq (bar)", "Proses Tipi"]
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        
+        if missing_cols:
+            raise ValueError(f"Cannot create temperature-pressure visualization due to missing columns: {missing_cols}")
+        
+        # Check for efficiency column
+        efficiency_col = None
+        if "Emalın Səmərəliliyi (%)" in df.columns:
+            efficiency_col = "Emalın Səmərəliliyi (%)"
+        elif "Process_KPI_Score" in df.columns:
+            efficiency_col = "Process_KPI_Score"
+        
+        # Create scatter plot with process types
+        fig = go.Figure()
+        
+        # Add traces for each process type
+        for process_type in df["Proses Tipi"].unique():
+            process_df = df[df["Proses Tipi"] == process_type]
+            
+            # Create hover text
+            hover_text = []
+            for idx, row in process_df.iterrows():
+                text = f"Process: {process_type}<br>Temperature: {row['Temperatur (°C)']}°C<br>Pressure: {row['Təzyiq (bar)']} bar"
+                if "Proses Addımı" in process_df.columns:
+                    text += f"<br>Step: {row['Proses Addımı']}"
+                if efficiency_col and efficiency_col in process_df.columns:
+                    text += f"<br>Efficiency: {row[efficiency_col]:.1f}%"
+                hover_text.append(text)
+            
+            # Add trace with color based on efficiency if available
+            marker_args = {}
+            if efficiency_col and efficiency_col in process_df.columns:
+                marker_args = {
+                    "color": process_df[efficiency_col],
+                    "colorscale": "Viridis",
+                    "colorbar": {
+                        "title": "Efficiency (%)",
+                        "titleside": "right"
+                    },
+                    "showscale": process_type == df["Proses Tipi"].unique()[0]  # Show colorbar only for first process
+                }
+            
+            fig.add_trace(go.Scatter(
+                x=process_df["Temperatur (°C)"],
+                y=process_df["Təzyiq (bar)"],
+                mode="markers",
+                name=process_type,
+                text=hover_text,
+                hoverinfo="text",
+                marker=dict(
+                    size=10,
+                    opacity=0.7,
+                    **marker_args
+                )
+            ))
+        
+        # Update layout
+        fig.update_layout(
+            title="Temperature-Pressure Relationship by Process Type",
+            xaxis_title="Temperature (°C)",
+            yaxis_title="Pressure (bar)",
+            height=500,
+            margin=dict(l=50, r=50, t=60, b=50),
+            hovermode="closest"
+        )
+        
+        # Apply theme
+        fig = viz_manager.apply_theme(fig, 'scatter')
+        
+        # Save visualization
+        viz_manager.save_visualization(fig, "temp_pressure")
+        
+        return fig
+    
+    except Exception as e:
+        logger.error(f"Error creating temperature-pressure visualization: {e}")
+        # Create a minimal version to avoid breaking the dashboard
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error creating temperature-pressure visualization: {str(e)}",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(color="red", size=14)
+        )
+        
+        # Save this error visualization
+        viz_manager.save_visualization(fig, "temp_pressure")
+        
+        return fig
+
+@timer_decorator
+def create_duration_impact(
+    datasets: Dict[str, pd.DataFrame], 
+    viz_manager: VisualizationManager
+) -> go.Figure:
+    """
+    Create process duration impact visualization
+    
+    Args:
+        datasets: Dictionary of DataFrames
+        viz_manager: Visualization manager instance
+        
+    Returns:
+        Plotly figure
+    """
+    logger.info("Creating process duration impact visualization")
+    
+    try:
+        # Get the main dataset
+        df = datasets["df"]
+        
+        # Check if required columns exist
+        required_cols = ["Prosesin Müddəti (saat)", "Emalın Səmərəliliyi (%)", "Proses Tipi"]
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        
+        if missing_cols:
+            raise ValueError(f"Cannot create duration impact visualization due to missing columns: {missing_cols}")
+        
+        # Create a scatter plot with trend lines for each process type
+        fig = go.Figure()
+        
+        # Add scatter points and trend lines for each process type
+        for process_type in df["Proses Tipi"].unique():
+            process_df = df[df["Proses Tipi"] == process_type]
+            
+            # Add scatter points
+            fig.add_trace(go.Scatter(
+                x=process_df["Prosesin Müddəti (saat)"],
+                y=process_df["Emalın Səmərəliliyi (%)"],
+                mode="markers",
+                name=f"{process_type} (Data)",
+                marker=dict(
+                    size=10,
+                    opacity=0.7
+                ),
+                hovertemplate="<b>" + process_type + "</b><br>" +
+                            "Duration: %{x} hours<br>" +
+                            "Efficiency: %{y:.1f}%<extra></extra>"
+            ))
+            
+            # Add trend line using linear regression if there are enough points
+            if len(process_df) >= 3:
+                # Calculate regression using numpy
+                x = process_df["Prosesin Müddəti (saat)"].values
+                y = process_df["Emalın Səmərəliliyi (%)"].values
+                
+                # Add a constant term to x for the intercept
+                x_with_const = np.vstack([x, np.ones(len(x))]).T
+                
+                # Calculate the regression coefficients (slope, intercept)
+                try:
+                    # Use numpy's least squares solution
+                    m, c = np.linalg.lstsq(x_with_const, y, rcond=None)[0]
+                    
+                    # Create x values for the trend line
+                    x_trend = np.array([min(x), max(x)])
+                    y_trend = m * x_trend + c
+                    
+                    # Add trend line
+                    fig.add_trace(go.Scatter(
+                        x=x_trend,
+                        y=y_trend,
+                        mode="lines",
+                        name=f"{process_type} (Trend)",
+                        line=dict(
+                            dash="dash",
+                            width=2
+                        ),
+                        hoverinfo="skip"
+                    ))
+                except Exception as e:
+                    logger.warning(f"Could not calculate trend line for {process_type}: {e}")
+        
+        # Update layout
+        fig.update_layout(
+            title="Process Duration Impact on Efficiency",
+            xaxis_title="Process Duration (hours)",
+            yaxis_title="Process Efficiency (%)",
+            height=500,
+            margin=dict(l=50, r=50, t=60, b=50),
+            hovermode="closest"
+        )
+        
+        # Apply theme
+        fig = viz_manager.apply_theme(fig, 'scatter')
+        
+        # Save visualization
+        viz_manager.save_visualization(fig, "duration_impact")
+        
+        return fig
+    
+    except Exception as e:
+        logger.error(f"Error creating duration impact visualization: {e}")
+        # Create a minimal version to avoid breaking the dashboard
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error creating duration impact visualization: {str(e)}",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(color="red", size=14)
+        )
+        
+        # Save this error visualization
+        viz_manager.save_visualization(fig, "duration_impact")
+        
+        return fig
+
+@timer_decorator
+def create_efficiency_correlation(
+    datasets: Dict[str, pd.DataFrame], 
+    viz_manager: VisualizationManager
+) -> go.Figure:
+    """
+    Create efficiency correlation visualization
+    
+    Args:
+        datasets: Dictionary of DataFrames
+        viz_manager: Visualization manager instance
+        
+    Returns:
+        Plotly figure
+    """
+    logger.info("Creating efficiency correlation visualization")
+    
+    try:
+        # Get the main dataset
+        df = datasets["df"]
+        
+        # Check if required columns exist
+        required_cols = ["Emalın Səmərəliliyi (%)"]
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        
+        if missing_cols:
+            raise ValueError(f"Cannot create efficiency correlation visualization due to missing columns: {missing_cols}")
+        
+        # Potential parameter columns
+        parameter_cols = [
+            "Temperatur (°C)", "Təzyiq (bar)", "Prosesin Müddəti (saat)"
+        ]
+        
+        # Add additional metrics if available
+        for col in ["Energy_per_ton", "Enerji İstifadəsi (kWh)"]:
+            if col in df.columns:
+                parameter_cols.append(col)
+        
+        # Filter to available columns
+        available_params = [col for col in parameter_cols if col in df.columns]
+        
+        if len(available_params) < 1:
+            raise ValueError("No parameter columns available for efficiency correlation")
+        
+        # Create subplot with multiple parameters
+        nrows = (len(available_params) + 1) // 2  # Ceiling division
+        fig = make_subplots(rows=nrows, cols=2, 
+                           subplot_titles=[f"{param} vs Efficiency" for param in available_params],
+                           vertical_spacing=0.1,
+                           horizontal_spacing=0.1)
+        
+        # Loop through parameters and create scatter plots
+        for i, param in enumerate(available_params):
+            row = i // 2 + 1
+            col = i % 2 + 1
+            
+            # Calculate correlation
+            corr = df[param].corr(df["Emalın Səmərəliliyi (%)"])
+            corr_text = f"Correlation: {corr:.2f}"
+            
+            # Add scatter trace
+            fig.add_trace(
+                go.Scatter(
+                    x=df[param],
+                    y=df["Emalın Səmərəliliyi (%)"],
+                    mode="markers",
+                    name=param,
+                    marker=dict(
+                        size=8,
+                        opacity=0.7,
+                        color=df["Emalın Səmərəliliyi (%)"],
+                        colorscale="Viridis",
+                        showscale=(i == 0)  # Show colorbar only for first parameter
+                    ),
+                    hovertemplate=f"{param}: %{{x}}<br>Efficiency: %{{y:.1f}}%<extra></extra>"
+                ),
+                row=row, col=col
+            )
+            
+            # Add trend line
+            x = df[param].values
+            y = df["Emalın Səmərəliliyi (%)"].values
+            
+            # Add a constant term to x for the intercept
+            x_with_const = np.vstack([x, np.ones(len(x))]).T
+            
+            try:
+                # Calculate regression
+                m, c = np.linalg.lstsq(x_with_const, y, rcond=None)[0]
+                
+                # Create x values for the trend line
+                x_trend = np.array([min(x), max(x)])
+                y_trend = m * x_trend + c
+                
+                # Add trend line
+                fig.add_trace(
+                    go.Scatter(
+                        x=x_trend,
+                        y=y_trend,
+                        mode="lines",
+                        name=f"{param} Trend",
+                        line=dict(
+                            color="red",
+                            dash="dash",
+                            width=2
+                        ),
+                        showlegend=False,
+                        hoverinfo="skip"
+                    ),
+                    row=row, col=col
+                )
+                
+                # Add correlation annotation
+                fig.add_annotation(
+                    x=0.95,
+                    y=0.05,
+                    xref=f"x{i+1 if i > 0 else ''} domain",
+                    yref=f"y{i+1 if i > 0 else ''} domain",
+                    text=corr_text,
+                    showarrow=False,
+                    align="right",
+                    bgcolor="rgba(255, 255, 255, 0.7)",
+                    borderpad=4
+                )
+            except Exception as e:
+                logger.warning(f"Could not calculate trend line for {param}: {e}")
+        
+        # Update layout for empty subplots if odd number of parameters
+        if len(available_params) % 2 == 1:
+            # Hide unused subplot
+            fig.update_xaxes(visible=False, row=nrows, col=2)
+            fig.update_yaxes(visible=False, row=nrows, col=2)
+        
+        # Update overall layout
+        fig.update_layout(
+            title="Parameter Correlation with Process Efficiency",
+            height=300 * nrows,
+            margin=dict(l=50, r=50, t=80, b=50),
+            showlegend=False
+        )
+        
+        # Update all xaxes and yaxes
+        for i in range(len(available_params)):
+            row = i // 2 + 1
+            col = i % 2 + 1
+            fig.update_xaxes(title_text=available_params[i], row=row, col=col)
+            fig.update_yaxes(title_text="Efficiency (%)" if col == 1 else None, row=row, col=col)
+        
+        # Apply theme elements (limited for subplots)
+        fig.update_layout(
+            font=viz_manager.config.get('theme', {}).get('font', {'family': 'Arial, sans-serif', 'size': 12}),
+            paper_bgcolor=viz_manager.config.get('theme', {}).get('paper_bgcolor', 'white'),
+            plot_bgcolor=viz_manager.config.get('theme', {}).get('plot_bgcolor', 'rgba(240, 240, 240, 0.5)')
+        )
+        
+        # Save visualization
+        viz_manager.save_visualization(fig, "efficiency_correlation")
+        
+        return fig
+    
+    except Exception as e:
+        logger.error(f"Error creating efficiency correlation visualization: {e}")
+        # Create a minimal version to avoid breaking the dashboard
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error creating efficiency correlation visualization: {str(e)}",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(color="red", size=14)
+        )
+        
+        # Save this error visualization
+        viz_manager.save_visualization(fig, "efficiency_correlation")
+        
+        return fig
+
+@timer_decorator
+def create_kpi_dashboard(
+    datasets: Dict[str, pd.DataFrame], 
+    viz_manager: VisualizationManager
+) -> go.Figure:
+    """
+    Create KPI dashboard visualization with summary metrics
+    
+    Args:
+        datasets: Dictionary of DataFrames
+        viz_manager: Visualization manager instance
+        
+    Returns:
+        Plotly figure
+    """
+    logger.info("Creating KPI dashboard visualization")
+    
+    try:
+        # Get the main dataset
+        df = datasets["df"]
+        
+        # Initialize KPI data
+        kpi_data = {}
+        
+        # Get overall efficiency
+        if "Emalın Səmərəliliyi (%)" in df.columns:
+            kpi_data["efficiency"] = {
+                "value": df["Emalın Səmərəliliyi (%)"].mean(),
+                "target": 95.0,
+                "unit": "%",
+                "title": "Average Process Efficiency",
+                "color": "#1f77b4"  # Blue
+            }
+        
+        # Get energy metrics
+        energy_col = None
+        if "Energy_per_ton" in df.columns:
+            energy_col = "Energy_per_ton"
+        elif "Enerji İstifadəsi (kWh)" in df.columns and "Emal Həcmi (ton)" in df.columns:
+            # Calculate energy per ton
+            total_energy = df["Enerji İstifadəsi (kWh)"].sum()
+            total_volume = df["Emal Həcmi (ton)"].sum()
+            
+            if total_volume > 0:
+                energy_value = total_energy / total_volume
+                kpi_data["energy"] = {
+                    "value": energy_value,
+                    "target": 1.6,
+                    "unit": "kWh/ton",
+                    "title": "Energy Consumption",
+                    "color": "#2ca02c"  # Green
+                }
+        elif energy_col:
+            kpi_data["energy"] = {
+                "value": df[energy_col].mean(),
+                "target": 1.6,
+                "unit": "kWh/ton",
+                "title": "Energy Consumption",
+                "color": "#2ca02c"  # Green
+            }
+        
+        # Get safety metrics
+        if "Təhlükəsizlik Hadisələri" in df.columns and "Emal Həcmi (ton)" in df.columns:
+            total_incidents = df["Təhlükəsizlik Hadisələri"].sum()
+            total_volume = df["Emal Həcmi (ton)"].sum()
+            
+            if total_volume > 0:
+                incidents_per_1000t = (total_incidents / total_volume) * 1000
+                kpi_data["safety"] = {
+                    "value": incidents_per_1000t,
+                    "target": 2.0,
+                    "unit": "per 1000t",
+                    "title": "Safety Incidents",
+                    "color": "#d62728"  # Red
+                }
+        
+        # Get cost metrics
+        if "Əməliyyat Xərcləri (AZN)" in df.columns and "Emal Həcmi (ton)" in df.columns:
+            total_cost = df["Əməliyyat Xərcləri (AZN)"].sum()
+            total_volume = df["Emal Həcmi (ton)"].sum()
+            
+            if total_volume > 0:
+                cost_per_ton = total_cost / total_volume
+                kpi_data["cost"] = {
+                    "value": cost_per_ton,
+                    "target": cost_per_ton * 0.9,  # Target 10% lower than current
+                    "unit": "AZN/ton",
+                    "title": "Operating Cost",
+                    "color": "#ff7f0e"  # Orange
+                }
+        
+        # Check if we have any KPIs
+        if not kpi_data:
+            raise ValueError("No KPI metrics available for dashboard visualization")
+        
+        # Create figure with gauge charts for KPIs
+        fig = make_subplots(
+            rows=1, cols=len(kpi_data),
+            subplot_titles=[kpi["title"] for kpi in kpi_data.values()]
+        )
+        
+        # Add gauge charts for each KPI
+        for i, (kpi_key, kpi) in enumerate(kpi_data.items()):
+            # Determine if higher is better or lower is better
+            higher_is_better = kpi_key == "efficiency"
+            
+            # Calculate performance percentage (0-100)
+            if higher_is_better:
+                # For efficiency, higher is better
+                performance = min(100, (kpi["value"] / kpi["target"]) * 100)
+            else:
+                # For energy, safety, cost, lower is better
+                performance = max(0, (1 - (kpi["value"] / kpi["target"])) * 100)
+            
+            # Define gauge chart ranges
+            if higher_is_better:
+                steps = [
+                    {'range': [0, 70], 'color': 'rgba(255, 0, 0, 0.3)'},
+                    {'range': [70, 90], 'color': 'rgba(255, 255, 0, 0.3)'},
+                    {'range': [90, 100], 'color': 'rgba(0, 255, 0, 0.3)'}
+                ]
+            else:
+                steps = [
+                    {'range': [0, 70], 'color': 'rgba(255, 0, 0, 0.3)'},
+                    {'range': [70, 90], 'color': 'rgba(255, 255, 0, 0.3)'},
+                    {'range': [90, 100], 'color': 'rgba(0, 255, 0, 0.3)'}
+                ]
+            
+            # Create gauge chart
+            fig.add_trace(
+                go.Indicator(
+                    mode="gauge+number+delta",
+                    value=kpi["value"],
+                    delta={'reference': kpi["target"], 'relative': True, 'valueformat': '.1%'},
+                    number={'suffix': kpi["unit"], 'valueformat': '.2f'},
+                    title={'text': kpi["title"]},
+                    gauge={
+                        'axis': {'range': [0, kpi["target"] * 1.5], 'ticksuffix': kpi["unit"]},
+                        'bar': {'color': kpi["color"]},
+                        'steps': steps,
+                        'threshold': {
+                            'line': {'color': "black", 'width': 3},
+                            'thickness': 0.75,
+                            'value': kpi["target"]
+                        }
+                    }
+                ),
+                row=1, col=i+1
+            )
+        
+        # Update layout
+        fig.update_layout(
+            title="Process Performance KPI Dashboard",
+            height=400,
+            margin=dict(l=50, r=50, t=80, b=50)
+        )
+        
+        # Apply theme (limited for indicator charts)
+        fig.update_layout(
+            font=viz_manager.config.get('theme', {}).get('font', {'family': 'Arial, sans-serif', 'size': 12}),
+            paper_bgcolor=viz_manager.config.get('theme', {}).get('paper_bgcolor', 'white')
+        )
+        
+        # Save visualization
+        viz_manager.save_visualization(fig, "kpi_dashboard")
+        
+        return fig
+    
+    except Exception as e:
+        logger.error(f"Error creating KPI dashboard visualization: {e}")
+        # Create a minimal version to avoid breaking the dashboard
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error creating KPI dashboard visualization: {str(e)}",
+            xref="paper", yref="paper",
+            x=0.5, y=0.5, showarrow=False,
+            font=dict(color="red", size=14)
+        )
+        
+        # Save this error visualization
+        viz_manager.save_visualization(fig, "kpi_dashboard")
+        
+        return fig
+    
+
+@timer_decorator
 def generate_all_visualizations(
     data_dir: str = "dashboard/data", 
     output_dir: str = "dashboard/charts",
@@ -1379,6 +2301,62 @@ def generate_all_visualizations(
                 logger.info("Successfully created ROI projection visualization")
             except Exception as e:
                 logger.error(f"Failed to create ROI projection visualization: {e}")
+        
+        # Energy by process
+        if visualizations_config.get('energy_by_process', True):
+            try:
+                result["energy_by_process"] = create_energy_by_process(datasets, viz_manager)
+                logger.info("Successfully created energy by process visualization")
+            except Exception as e:
+                logger.error(f"Failed to create energy by process visualization: {e}")
+
+        # Energy parameters
+        if visualizations_config.get('energy_parameters', True):
+            try:
+                result["energy_parameters"] = create_energy_parameters(datasets, viz_manager)
+                logger.info("Successfully created energy parameters visualization")
+            except Exception as e:
+                logger.error(f"Failed to create energy parameters visualization: {e}")
+
+        # Parameter correlation
+        if visualizations_config.get('parameter_correlation', True):
+            try:
+                result["parameter_correlation"] = create_parameter_correlation(datasets, viz_manager)
+                logger.info("Successfully created parameter correlation visualization")
+            except Exception as e:
+                logger.error(f"Failed to create parameter correlation visualization: {e}")
+
+        # Temperature pressure
+        if visualizations_config.get('temp_pressure', True):
+            try:
+                result["temp_pressure"] = create_temp_pressure(datasets, viz_manager)
+                logger.info("Successfully created temperature-pressure visualization")
+            except Exception as e:
+                logger.error(f"Failed to create temperature-pressure visualization: {e}")
+
+        # Duration impact
+        if visualizations_config.get('duration_impact', True):
+            try:
+                result["duration_impact"] = create_duration_impact(datasets, viz_manager)
+                logger.info("Successfully created duration impact visualization")
+            except Exception as e:
+                logger.error(f"Failed to create duration impact visualization: {e}")
+
+        # KPI dashboard
+        if visualizations_config.get('kpi_dashboard', True):
+            try:
+                result["kpi_dashboard"] = create_kpi_dashboard(datasets, viz_manager)
+                logger.info("Successfully created KPI dashboard visualization")
+            except Exception as e:
+                logger.error(f"Failed to create KPI dashboard visualization: {e}")
+
+        # Efficiency correlation
+        if visualizations_config.get('efficiency_correlation', True):
+            try:
+                result["efficiency_correlation"] = create_efficiency_correlation(datasets, viz_manager)
+                logger.info("Successfully created efficiency correlation visualization")
+            except Exception as e:
+                logger.error(f"Failed to create efficiency correlation visualization: {e}")
         
         # 8. Save visualization metadata
         metadata = {
