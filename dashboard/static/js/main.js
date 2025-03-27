@@ -32,6 +32,7 @@ async function initDashboard() {
             fetchProcessTypesData(),
             fetchEfficiencyByProcessData(),
             fetchEnergyVsEfficiencyData(),
+            fetchEnergyByProcessData(),
             fetchCO2VsCostData(),
             fetchCatalystEfficiencyData(),
             fetchProcessDurationData(),
@@ -224,6 +225,7 @@ function renderDashboard() {
     renderProcessTypesChart();
     renderEfficiencyByProcessChart();
     renderEnergyVsEfficiencyChart();
+    renderEnergyByProcessChart();
     renderCO2VsCostChart();
     renderCatalystEfficiencyChart();
     renderProcessDurationChart();
