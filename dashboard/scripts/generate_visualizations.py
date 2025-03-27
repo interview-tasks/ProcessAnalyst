@@ -1635,11 +1635,13 @@ def create_temp_pressure(
             raise ValueError(f"Cannot create temperature-pressure visualization due to missing columns: {missing_cols}")
         
         # Check for efficiency column
-        efficiency_col = None
-        if "Emalın Səmərəliliyi (%)" in df.columns:
-            efficiency_col = "Emalın Səmərəliliyi (%)"
-        elif "Process_KPI_Score" in df.columns:
-            efficiency_col = "Process_KPI_Score"
+        # efficiency_col = None
+        # if "Emalın Səmərəliliyi (%)" in df.columns:
+        #     efficiency_col = "Emalın Səmərəliliyi (%)"
+        # elif "Process_KPI_Score" in df.columns:
+        #     efficiency_col = "Process_KPI_Score"
+        efficiency_col = next((col for col in ["Emalın Səmərəliliyi (%)", "Emalın Səmərəliliyi (%)_mean"]
+                               if col in process_data.columns), None)
         
         # Create scatter plot with process types
         fig = go.Figure()
@@ -1666,7 +1668,8 @@ def create_temp_pressure(
                     "colorscale": "Viridis",
                     "colorbar": {
                         "title": "Efficiency (%)",
-                        "titleside": "right"
+                        "title": {"side": "right"}
+                        # "titleside": "right"
                     },
                     "showscale": process_type == df["Proses Tipi"].unique()[0]  # Show colorbar only for first process
                 }
@@ -2108,9 +2111,13 @@ def create_kpi_dashboard(
             raise ValueError("No KPI metrics available for dashboard visualization")
         
         # Create figure with gauge charts for KPIs
+        # fig = make_subplots(
+        #     rows=1, cols=len(kpi_data),
+        #     subplot_titles=[kpi["title"] for kpi in kpi_data.values()]
+        # )
         fig = make_subplots(
             rows=1, cols=len(kpi_data),
-            subplot_titles=[kpi["title"] for kpi in kpi_data.values()]
+            specs=[[{"type": "indicator"} for _ in range(len(kpi_data))]]
         )
         
         # Add gauge charts for each KPI
