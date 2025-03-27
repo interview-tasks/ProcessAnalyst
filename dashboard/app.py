@@ -38,12 +38,12 @@ def get_process_types():
     counts.columns = ['process_type', 'count']
     return jsonify(counts.to_dict(orient='records'))
 
-# @app.route('/api/data/efficiency_by_process', methods=['GET'])
-# def get_efficiency_by_process():
-#     """Return average efficiency by process type"""
-#     efficiency = df.groupby('Proses Tipi')['Emalın Səmərəliliyi (%)'].mean().reset_index()
-#     efficiency.columns = ['process_type', 'avg_efficiency']
-#     return jsonify(efficiency.to_dict(orient='records'))
+@app.route('/api/data/efficiency_by_process', methods=['GET'])
+def get_efficiency_by_process():
+    """Return average efficiency by process type"""
+    efficiency = df.groupby('Proses Tipi')['Emalın Səmərəliliyi (%)'].mean().reset_index()
+    efficiency.columns = ['process_type', 'avg_efficiency']
+    return jsonify(efficiency.to_dict(orient='records'))
 
 @app.route('/api/data/energy_vs_efficiency', methods=['GET'])
 def get_energy_vs_efficiency():
