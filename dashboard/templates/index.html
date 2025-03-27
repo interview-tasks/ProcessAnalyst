@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOCAR Process Analyst Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <div class="sidebar-header">
+                    <h3>SOCAR</h3>
+                    <h5>Process Analyst</h5>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#overview">
+                            <i class="fas fa-chart-pie"></i> Ümumi Görünüş
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#efficiency">
+                            <i class="fas fa-bullseye"></i> Səmərəlilik
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#energy">
+                            <i class="fas fa-bolt"></i> Enerji
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#environmental">
+                            <i class="fas fa-leaf"></i> Ətraf Mühit
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#catalyst">
+                            <i class="fas fa-flask"></i> Katalizatorlar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#timeline">
+                            <i class="fas fa-calendar"></i> Zaman Qrafiki
+                        </a>
+                    </li>
+                </ul>
+                <div class="sidebar-footer">
+                    <p>&copy; 2025 SOCAR ProcessAnalyst</p>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 main-content">
+                <div class="header">
+                    <h1>Process Analytics Dashboard</h1>
+                    <div class="filter-bar">
+                        <select id="processTypeFilter" class="form-select">
+                            <option value="all">Bütün Proseslər</option>
+                            <!-- Will be populated with JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Overview Section -->
+                <section id="overview" class="dashboard-section">
+                    <h2>Ümumi Görünüş</h2>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Ümumi Proseslər</h5>
+                                    <p class="card-text" id="totalProcesses">Yüklənir...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Orta Səmərəlilik</h5>
+                                    <p class="card-text" id="avgEfficiency">Yüklənir...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Ümumi Enerji</h5>
+                                    <p class="card-text" id="totalEnergy">Yüklənir...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Təhlükəsizlik Hadisələri</h5>
+                                    <p class="card-text" id="safetyIncidents">Yüklənir...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Proses Növləri</h5>
+                                    <div id="processTypesChart" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Səmərəlilik üzrə Proses Növləri</h5>
+                                    <div id="efficiencyByProcessChart" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Efficiency Section -->
+                <section id="efficiency" class="dashboard-section">
+                    <h2>Səmərəlilik Analizi</h2>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Enerji və Səmərəlilik Əlaqəsi</h5>
+                                    <div id="energyVsEfficiencyChart" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Temperatur və Təzyiqin Səmərəliliyə Təsiri</h5>
+                                    <div id="tempPressureEfficiencyChart" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Energy Section -->
+                <section id="energy" class="dashboard-section">
+                    <h2>Enerji İstifadəsi</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Proses üzrə Enerji İstifadəsi</h5>
+                                    <div id="energyByProcessChart" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Proses Müddəti</h5>
+                                    <div id="processDurationChart" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Environmental Section -->
+                <section id="environmental" class="dashboard-section">
+                    <h2>Ətraf Mühitə Təsir</h2>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">CO₂ Emissiyaları və Əməliyyat Xərcləri</h5>
+                                    <div id="co2VsCostChart" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Catalyst Section -->
+                <section id="catalyst" class="dashboard-section">
+                    <h2>Katalizator Analizi</h2>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Katalizator Səmərəliliyi</h5>
+                                    <div id="catalystEfficiencyChart" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Timeline Section -->
+                <section id="timeline" class="dashboard-section">
+                    <h2>Proses Zaman Qrafiki</h2>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Proses Zaman Qrafiki (Son 50 Proses)</h5>
+                                    <div id="timelineChart" class="chart-container timeline-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.24.2/plotly.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
