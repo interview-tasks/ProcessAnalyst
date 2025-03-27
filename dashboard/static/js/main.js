@@ -161,6 +161,15 @@ async function fetchEnergyVsEfficiencyData() {
     }
 }
 
+async function fetchEnergyByProcessData() {
+    try {
+        const response = await fetch('/api/data/energy_by_process');
+        dashboardData.energyByProcess = await response.json();
+    } catch (error) {
+        console.error('Error fetching energy by process data:', error);
+    }
+}
+
 async function fetchCO2VsCostData() {
     try {
         const response = await fetch('/api/data/co2_vs_cost');
@@ -295,6 +304,30 @@ function renderEfficiencyByProcessChart() {
     };
     
     Plotly.newPlot('efficiencyByProcessChart', barData, layout);
+}
+
+function renderEnergyByProcessChart() {
+    if (!dashboardData.energyByProcess) return;
+    
+    const data = dashboardData.energyByProcess;
+    
+    const barData = [{
+        x: data.map(item => item.process_type),
+        y: data.map(item => item.avg_energy),
+        type: 'bar',
+        marker: {
+            color: '#ff7f0e'
+        }
+    }];
+    
+    const layout = {
+        margin: { t: 10, b: 50, l: 50, r: 20 },
+        yaxis: {
+            title: 'Orta Enerji İstifadəsi (kWh)'
+        }
+    };
+    
+    Plotly.newPlot('energyByProcessChart', barData, layout);
 }
 
 function renderEnergyVsEfficiencyChart(filteredData = null) {
