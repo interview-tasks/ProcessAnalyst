@@ -1,0 +1,20 @@
+{
+    "analysis_timestamp": "2025-03-27 11:45:39",
+    "input_file": "dashboard/data/data.csv",
+    "output_directory": "dashboard/data",
+    "data_rows": 1000,
+    "data_columns": 28,
+    "aggregated_datasets": [
+        "process_types",
+        "process_steps",
+        "safety_parameters"
+    ],
+    "derived_metrics": [
+        "Safety_Risk",
+        "Has_Incident",
+        "Temperature_Category",
+        "Pressure_Category",
+        "Process_KPI_Score"
+    ],
+    "execution_time_seconds": 0.03
+}

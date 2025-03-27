@@ -1,0 +1,17 @@
+{
+    "visualization_timestamp": "2025-03-27 11:46:05",
+    "data_directory": "dashboard/data",
+    "output_directory": "dashboard/charts",
+    "config_file": "visualization_config.yaml",
+    "visualizations_created": [
+        "process_efficiency",
+        "energy_safety",
+        "process_hierarchy",
+        "safety_heatmap",
+        "process_step_safety",
+        "catalyst_matrix",
+        "catalyst_parallel",
+        "roi_by_process"
+    ],
+    "execution_time_seconds": 0.48
+}
