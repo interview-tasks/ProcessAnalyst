@@ -5,8 +5,8 @@
 
 // Dashboard configuration
 const config = {
-    dataPath: './dashboard/data/',
-    chartsPath: './dashboard/charts/',
+    dataPath: './data/',
+    chartsPath: './charts/',
     processDependencies: {
         overview: ['process_efficiency.json', 'energy_safety.json', 'roi_by_process.json'],
         efficiency: ['process_hierarchy.json', 'efficiency_correlation.json'],
