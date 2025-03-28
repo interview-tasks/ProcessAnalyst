@@ -261,13 +261,23 @@ def echo_all(message):
 # Flask route to handle webhook
 @app.route(f'/{TELEGRAM_TOKEN}', methods=['POST'])
 def webhook():
-    if request.headers.get('content-type') == 'application/json':
-        json_str = request.get_data().decode('UTF-8')
-        update = types.Update.de_json(json_str)
-        bot.process_new_updates([update])
-        return ''
-    return '', 403
-
+    logger.info("Received webhook request")
+    try:
+        if request.headers.get('content-type') == 'application/json':
+            json_str = request.get_data().decode('UTF-8')
+            logger.info(f"Webhook data: {json_str[:100]}...")  # Log first 100 chars
+            update = types.Update.de_json(json_str)
+            logger.info(f"Processing update: {update.update_id}")
+            bot.process_new_updates([update])
+            logger.info("Update processed successfully")
+            return ''
+        else:
+            logger.warning(f"Received non-JSON content type: {request.headers.get('content-type')}")
+            return '', 403
+    except Exception as e:
+        logger.error(f"Error in webhook processing: {e}")
+        return '', 500
+    
 # Health check endpoint
 @app.route('/health', methods=['GET'])
 def health_check():
