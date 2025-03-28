@@ -105,7 +105,3 @@ The application expects a CSV file named `data.csv` with the following columns:
 - Energy_per_ton
 - CO2_per_ton
 - Cost_per_ton
-
-## Security Note
-
-The provided OpenAI API key in your request (sk-None-oXPtwwbJnBlFKWNrUz8TT3BlbkFJlUxme5uI8uwY7dMjDmzu) appears to be invalid or a placeholder. Make sure to use a valid API key in your .env file when deploying the application.
