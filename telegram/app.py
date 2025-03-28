@@ -173,6 +173,11 @@ def generate_data_summary(data):
 def send_welcome(message):
     logger.info(f"Received /start command from user {message.from_user.id}")
     try:
+        # First try to send a very simple message without markup
+        bot.send_message(message.chat.id, "Bot is starting...")
+        logger.info("Sent initial message")
+        
+        # Now try to create and send the keyboard
         markup = types.ReplyKeyboardMarkup(row_width=2)
         item1 = types.KeyboardButton('Əsas Məlumatlar')
         item2 = types.KeyboardButton('Səmərəlilik Analizi')
@@ -182,12 +187,22 @@ def send_welcome(message):
         item6 = types.KeyboardButton('OpenAI Təhlili')
         
         markup.add(item1, item2, item3, item4, item5, item6)
-        logger.info("Sending welcome message with keyboard markup")
-        bot.reply_to(message, "Xoş gəlmisiniz! Lütfən, aşağıdakı seçimlərdən birini seçin:", reply_markup=markup)
+        logger.info("Created keyboard markup")
+        
+        result = bot.send_message(
+            message.chat.id, 
+            "Xoş gəlmisiniz! Lütfən, aşağıdakı seçimlərdən birini seçin:", 
+            reply_markup=markup
+        )
+        logger.info(f"Welcome message sent, message_id: {result.message_id}")
     except Exception as e:
         logger.error(f"Error in send_welcome: {e}")
-        bot.reply_to(message, "Xəta baş verdi. Zəhmət olmasa bir az sonra yenidən cəhd edin.")
-        
+        try:
+            bot.send_message(message.chat.id, f"Error: {str(e)}")
+            logger.info("Sent error message")
+        except Exception as e2:
+            logger.error(f"Could not send error message: {e2}")
+                  
 @bot.message_handler(func=lambda message: message.text == 'Əsas Məlumatlar')
 def send_summary(message):
     data = load_data()
@@ -265,9 +280,23 @@ def webhook():
     try:
         if request.headers.get('content-type') == 'application/json':
             json_str = request.get_data().decode('UTF-8')
-            logger.info(f"Webhook data: {json_str[:100]}...")  # Log first 100 chars
+            logger.info(f"Webhook data: {json_str[:100]}...")
             update = types.Update.de_json(json_str)
             logger.info(f"Processing update: {update.update_id}")
+            
+            # Extract chat_id for direct testing
+            if hasattr(update, 'message') and update.message:
+                chat_id = update.message.chat.id
+                logger.info(f"Detected chat_id: {chat_id}")
+                
+                # Try a direct message outside regular handlers
+                try:
+                    bot.send_message(chat_id, "Test message directly from webhook handler")
+                    logger.info(f"Direct test message sent to {chat_id}")
+                except Exception as e:
+                    logger.error(f"Error sending direct test message: {e}")
+            
+            # Process normally
             bot.process_new_updates([update])
             logger.info("Update processed successfully")
             return ''
@@ -277,7 +306,7 @@ def webhook():
     except Exception as e:
         logger.error(f"Error in webhook processing: {e}")
         return '', 500
-    
+     
 # Health check endpoint
 @app.route('/health', methods=['GET'])
 def health_check():
