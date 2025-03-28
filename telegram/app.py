@@ -35,7 +35,7 @@ bot = telebot.TeleBot(TELEGRAM_TOKEN)
 # Load the data
 def load_data():
     try:
-        data = pd.read_csv('data.csv')
+        data = pd.read_csv('data/data.csv')
         logger.info(f"Data loaded successfully with {data.shape[0]} rows and {data.shape[1]} columns")
         return data
     except Exception as e:
