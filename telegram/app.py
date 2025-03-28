@@ -273,7 +273,6 @@ def send_ai_insights(message):
 def echo_all(message):
     bot.reply_to(message, "Xahiş edirik mövcud olan düymələrdən birini seçin.")
 
-# Flask route to handle webhook
 @app.route(f'/{TELEGRAM_TOKEN}', methods=['POST'])
 def webhook():
     logger.info("Received webhook request")
@@ -296,16 +295,60 @@ def webhook():
                     markup = types.ReplyKeyboardMarkup(row_width=2)
                     item1 = types.KeyboardButton('Əsas Məlumatlar')
                     item2 = types.KeyboardButton('Səmərəlilik Analizi')
-                    markup.add(item1, item2)
+                    item3 = types.KeyboardButton('Enerji İstifadəsi')
+                    item4 = types.KeyboardButton('Ətraf Mühit Təsiri')
+                    item5 = types.KeyboardButton('Xərc Analizi')
+                    item6 = types.KeyboardButton('OpenAI Təhlili')
+                    
+                    markup.add(item1, item2, item3, item4, item5, item6)
                     bot.send_message(chat_id, "Xoş gəlmisiniz! Lütfən, seçim edin:", reply_markup=markup)
                     logger.info("Welcome message sent with keyboard")
+                
                 elif message_text == 'Əsas Məlumatlar':
                     logger.info("Handling 'Əsas Məlumatlar' request")
                     bot.send_message(chat_id, "Əsas məlumatlar yüklənir...")
-                    # Load data and send summary here
+                    
+                    try:
+                        # Load data
+                        data = pd.read_csv('data.csv')
+                        logger.info(f"Data loaded: {data.shape[0]} rows, {data.shape[1]} columns")
+                        
+                        # Generate summary
+                        summary = generate_data_summary(data)
+                        logger.info("Data summary generated")
+                        
+                        # Send summary
+                        bot.send_message(chat_id, summary)
+                        logger.info("Summary sent to user")
+                    except Exception as e:
+                        logger.error(f"Error processing data: {e}")
+                        bot.send_message(chat_id, f"Məlumatların emalında xəta: {str(e)}")
+                
+                elif message_text == 'Səmərəlilik Analizi':
+                    logger.info("Handling 'Səmərəlilik Analizi' request")
+                    bot.send_message(chat_id, "Səmərəlilik analizi hazırlanır...")
+                    
+                    try:
+                        # Load data
+                        data = pd.read_csv('data.csv')
+                        logger.info("Data loaded for efficiency analysis")
+                        
+                        # Create chart
+                        chart = create_efficiency_chart(data)
+                        logger.info("Efficiency chart created")
+                        
+                        # Send chart
+                        bot.send_photo(chat_id, chart, caption="Proses Tipinə görə Emal Səmərəliliyi")
+                        logger.info("Efficiency chart sent to user")
+                    except Exception as e:
+                        logger.error(f"Error creating chart: {e}")
+                        bot.send_message(chat_id, f"Qrafik yaradılarkən xəta: {str(e)}")
+                
+                # Add handlers for other buttons here
+                
                 else:
                     # Default response
-                    bot.send_message(chat_id, f"Received: {message_text}")
+                    bot.send_message(chat_id, f"'{message_text}' əmri işlənir...")
                     logger.info(f"Sent default response for: {message_text}")
             
             return ''
@@ -314,8 +357,7 @@ def webhook():
             return '', 403
     except Exception as e:
         logger.error(f"Error in webhook processing: {e}")
-        return '', 500
-     
+        return '', 500    
 # Health check endpoint
 @app.route('/health', methods=['GET'])
 def health_check():
