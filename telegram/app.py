@@ -34,7 +34,7 @@ TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 if not TELEGRAM_TOKEN:
     logger.error("TELEGRAM_TOKEN environment variable not set!")
     # Use a fallback token for testing only
-    TELEGRAM_TOKEN = "7920657559:AAEw1eTjH1Fp0-jjoO1MlLIq4q7aZR7sBc0"
+    TELEGRAM_TOKEN = "test"
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
