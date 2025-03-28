@@ -12,6 +12,7 @@ import plotly.express as px
 import plotly.io as pio
 from dotenv import load_dotenv
 from flask import Flask, request
+import time
 
 # Load environment variables
 load_dotenv()
@@ -34,7 +35,7 @@ bot = telebot.TeleBot(TELEGRAM_TOKEN)
 # Load the data
 def load_data():
     try:
-        data = pd.read_csv('data/data.csv')
+        data = pd.read_csv('data.csv')
         logger.info(f"Data loaded successfully with {data.shape[0]} rows and {data.shape[1]} columns")
         return data
     except Exception as e:
@@ -254,27 +255,45 @@ def echo_all(message):
 # Flask route to handle webhook
 @app.route(f'/{TELEGRAM_TOKEN}', methods=['POST'])
 def webhook():
-    json_str = request.get_data().decode('UTF-8')
-    update = types.Update.de_json(json_str)
-    bot.process_new_updates([update])
-    return ''
+    if request.headers.get('content-type') == 'application/json':
+        json_str = request.get_data().decode('UTF-8')
+        update = types.Update.de_json(json_str)
+        bot.process_new_updates([update])
+        return ''
+    return '', 403
+
+# Health check endpoint
+@app.route('/health', methods=['GET'])
+def health_check():
+    return 'Bot is running!'
 
 @app.route('/')
 def index():
     return 'Telegram Bot is running!'
 
 if __name__ == '__main__':
-    # Set webhook for production or polling for development
+    # Get the port from environment variable provided by Render
+    port = int(os.environ.get('PORT', 5000))
+    
+    # For production, use webhook mode
     if os.environ.get('ENVIRONMENT') == 'production':
+        # Remove any existing webhook first
         bot.remove_webhook()
+        time.sleep(0.5)  # Give Telegram servers some time to process
+        
+        # Set webhook
         url = os.environ.get('APP_URL', '')
         if url:
-            bot.set_webhook(url=f"{url}/{TELEGRAM_TOKEN}")
+            webhook_url = f"{url}/{TELEGRAM_TOKEN}"
+            bot.set_webhook(url=webhook_url)
+            logger.info(f"Webhook set to {webhook_url}")
+        else:
+            logger.error("APP_URL environment variable not set")
+        
+        # Only run the Flask app (no polling) in production
+        app.run(host='0.0.0.0', port=port)
     else:
-        # Use polling for local development
+        # For development, just use polling mode
         bot.remove_webhook()
-        bot.polling(none_stop=True)
-    
-    # Run Flask app
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+        logger.info("Starting bot in polling mode for development")
+        bot.infinity_polling()
