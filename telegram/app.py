@@ -284,21 +284,30 @@ def webhook():
             update = types.Update.de_json(json_str)
             logger.info(f"Processing update: {update.update_id}")
             
-            # Extract chat_id for direct testing
+            # Extract chat_id and message for direct handling
             if hasattr(update, 'message') and update.message:
                 chat_id = update.message.chat.id
-                logger.info(f"Detected chat_id: {chat_id}")
+                message_text = update.message.text if hasattr(update.message, 'text') else None
+                logger.info(f"Detected chat_id: {chat_id}, message: {message_text}")
                 
-                # Try a direct message outside regular handlers
-                try:
-                    bot.send_message(chat_id, "Test message directly from webhook handler")
-                    logger.info(f"Direct test message sent to {chat_id}")
-                except Exception as e:
-                    logger.error(f"Error sending direct test message: {e}")
+                # Handle commands manually
+                if message_text == '/start':
+                    logger.info("Detected /start command, handling directly")
+                    markup = types.ReplyKeyboardMarkup(row_width=2)
+                    item1 = types.KeyboardButton('Əsas Məlumatlar')
+                    item2 = types.KeyboardButton('Səmərəlilik Analizi')
+                    markup.add(item1, item2)
+                    bot.send_message(chat_id, "Xoş gəlmisiniz! Lütfən, seçim edin:", reply_markup=markup)
+                    logger.info("Welcome message sent with keyboard")
+                elif message_text == 'Əsas Məlumatlar':
+                    logger.info("Handling 'Əsas Məlumatlar' request")
+                    bot.send_message(chat_id, "Əsas məlumatlar yüklənir...")
+                    # Load data and send summary here
+                else:
+                    # Default response
+                    bot.send_message(chat_id, f"Received: {message_text}")
+                    logger.info(f"Sent default response for: {message_text}")
             
-            # Process normally
-            bot.process_new_updates([update])
-            logger.info("Update processed successfully")
             return ''
         else:
             logger.warning(f"Received non-JSON content type: {request.headers.get('content-type')}")
