@@ -13,6 +13,7 @@ import plotly.io as pio
 from dotenv import load_dotenv
 from flask import Flask, request
 import time
+import traceback
 
 # Load environment variables
 load_dotenv()
@@ -30,14 +31,38 @@ openai.api_key = OPENAI_API_KEY
 
 # Initialize Telegram bot
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
+if not TELEGRAM_TOKEN:
+    logger.error("TELEGRAM_TOKEN environment variable not set!")
+    # Use a fallback token for testing only
+    TELEGRAM_TOKEN = "7920657559:AAEw1eTjH1Fp0-jjoO1MlLIq4q7aZR7sBc0"
+
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
-# Load the data
+# Load the data - check both locations
 def load_data():
     try:
-        data = pd.read_csv('data/data.csv')
-        logger.info(f"Data loaded successfully with {data.shape[0]} rows and {data.shape[1]} columns")
-        return data
+        # Try data.csv in root directory first
+        try:
+            data = pd.read_csv('data.csv')
+            logger.info(f"Data loaded from root directory: {data.shape[0]} rows, {data.shape[1]} columns")
+            return data
+        except Exception as e:
+            logger.warning(f"Error loading data from root: {e}")
+            
+        # Try data directory
+        try:
+            data = pd.read_csv('data/data.csv')
+            logger.info(f"Data loaded from data directory: {data.shape[0]} rows, {data.shape[1]} columns")
+            return data
+        except Exception as e:
+            logger.warning(f"Error loading data from data directory: {e}")
+            
+        # Try working directory
+        import glob
+        logger.info(f"Files in current directory: {glob.glob('*')}")
+        logger.info(f"Current working directory: {os.getcwd()}")
+            
+        raise Exception("Could not find data.csv in any location")
     except Exception as e:
         logger.error(f"Error loading data: {e}")
         return None
@@ -59,90 +84,107 @@ def generate_insights(data_description):
 
 # Function to create charts
 def create_efficiency_chart(data):
-    plt.figure(figsize=(12, 8))
-    sns.boxplot(x='Proses Tipi', y='Emalın Səmərəliliyi (%)', data=data)
-    plt.title('Proses Tipinə görə Emal Səmərəliliyi', fontsize=16)
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    plt.close()
-    return buffer
+    try:
+        plt.figure(figsize=(12, 8))
+        sns.boxplot(x='Proses Tipi', y='Emalın Səmərəliliyi (%)', data=data)
+        plt.title('Proses Tipinə görə Emal Səmərəliliyi', fontsize=16)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        plt.close()
+        return buffer
+    except Exception as e:
+        logger.error(f"Error creating efficiency chart: {str(e)}")
+        raise
 
 def create_energy_chart(data):
-    plt.figure(figsize=(12, 8))
-    fig = px.scatter(data, 
-                    x='Emal Həcmi (ton)', 
-                    y='Enerji İstifadəsi (kWh)',
-                    color='Proses Tipi',
-                    size='Energy_per_ton',
-                    hover_data=['Proses ID', 'Təzyiq (bar)', 'Temperatur (°C)'])
-    fig.update_layout(title='Emal Həcmi və Enerji İstifadəsi Arasında Əlaqə')
-    
-    buffer = BytesIO()
-    pio.write_image(fig, buffer, format='png')
-    buffer.seek(0)
-    return buffer
+    try:
+        plt.figure(figsize=(12, 8))
+        fig = px.scatter(data, 
+                        x='Emal Həcmi (ton)', 
+                        y='Enerji İstifadəsi (kWh)',
+                        color='Proses Tipi',
+                        size='Energy_per_ton',
+                        hover_data=['Proses ID', 'Təzyiq (bar)', 'Temperatur (°C)'])
+        fig.update_layout(title='Emal Həcmi və Enerji İstifadəsi Arasında Əlaqə')
+        
+        buffer = BytesIO()
+        pio.write_image(fig, buffer, format='png')
+        buffer.seek(0)
+        return buffer
+    except Exception as e:
+        logger.error(f"Error creating energy chart: {str(e)}")
+        raise
 
 def create_environmental_chart(data):
-    plt.figure(figsize=(12, 8))
-    avg_co2_by_type = data.groupby('Proses Tipi')['Ətraf Mühitə Təsir (g CO2 ekvivalent)'].mean().reset_index()
-    avg_co2_by_type = avg_co2_by_type.sort_values('Ətraf Mühitə Təsir (g CO2 ekvivalent)', ascending=False)
-    
-    plt.barh(avg_co2_by_type['Proses Tipi'], avg_co2_by_type['Ətraf Mühitə Təsir (g CO2 ekvivalent)'])
-    plt.title('Proses Tipinə görə Ortalama CO2 Emissiyası', fontsize=16)
-    plt.xlabel('CO2 Emissiyası (g)', fontsize=12)
-    plt.ylabel('Proses Tipi', fontsize=12)
-    plt.tight_layout()
-    
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    plt.close()
-    return buffer
+    try:
+        plt.figure(figsize=(12, 8))
+        avg_co2_by_type = data.groupby('Proses Tipi')['Ətraf Mühitə Təsir (g CO2 ekvivalent)'].mean().reset_index()
+        avg_co2_by_type = avg_co2_by_type.sort_values('Ətraf Mühitə Təsir (g CO2 ekvivalent)', ascending=False)
+        
+        plt.barh(avg_co2_by_type['Proses Tipi'], avg_co2_by_type['Ətraf Mühitə Təsir (g CO2 ekvivalent)'])
+        plt.title('Proses Tipinə görə Ortalama CO2 Emissiyası', fontsize=16)
+        plt.xlabel('CO2 Emissiyası (g)', fontsize=12)
+        plt.ylabel('Proses Tipi', fontsize=12)
+        plt.tight_layout()
+        
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        plt.close()
+        return buffer
+    except Exception as e:
+        logger.error(f"Error creating environmental chart: {str(e)}")
+        raise
 
 def create_cost_chart(data):
-    plt.figure(figsize=(12, 8))
-    cost_by_type = data.groupby('Proses Tipi')['Əməliyyat Xərcləri (AZN)'].sum().reset_index()
-    cost_by_type = cost_by_type.sort_values('Əməliyyat Xərcləri (AZN)', ascending=False)
-    
-    plt.bar(cost_by_type['Proses Tipi'], cost_by_type['Əməliyyat Xərcləri (AZN)'] / 1000)
-    plt.title('Proses Tipinə görə Ümumi Əməliyyat Xərcləri', fontsize=16)
-    plt.xlabel('Proses Tipi', fontsize=12)
-    plt.ylabel('Əməliyyat Xərcləri (Min AZN)', fontsize=12)
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    
-    buffer = BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    plt.close()
-    return buffer
+    try:
+        plt.figure(figsize=(12, 8))
+        cost_by_type = data.groupby('Proses Tipi')['Əməliyyat Xərcləri (AZN)'].sum().reset_index()
+        cost_by_type = cost_by_type.sort_values('Əməliyyat Xərcləri (AZN)', ascending=False)
+        
+        plt.bar(cost_by_type['Proses Tipi'], cost_by_type['Əməliyyat Xərcləri (AZN)'] / 1000)
+        plt.title('Proses Tipinə görə Ümumi Əməliyyat Xərcləri', fontsize=16)
+        plt.xlabel('Proses Tipi', fontsize=12)
+        plt.ylabel('Əməliyyat Xərcləri (Min AZN)', fontsize=12)
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        
+        buffer = BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        plt.close()
+        return buffer
+    except Exception as e:
+        logger.error(f"Error creating cost chart: {str(e)}")
+        raise
 
 # Generate a summary of the data
 def generate_data_summary(data):
-    summary = {
-        'total_processes': data.shape[0],
-        'process_types': data['Proses Tipi'].nunique(),
-        'avg_efficiency': data['Emalın Səmərəliliyi (%)'].mean(),
-        'total_energy': data['Enerji İstifadəsi (kWh)'].sum(),
-        'total_cost': data['Əməliyyat Xərcləri (AZN)'].sum(),
-        'avg_co2': data['Ətraf Mühitə Təsir (g CO2 ekvivalent)'].mean(),
-        'max_volume': data['Emal Həcmi (ton)'].max(),
-        'safety_incidents': data['Təhlükəsizlik Hadisələri'].sum()
-    }
-    
-    # Top and bottom performers
-    top_efficiency = data.sort_values('Emalın Səmərəliliyi (%)', ascending=False).head(3)
-    low_efficiency = data.sort_values('Emalın Səmərəliliyi (%)', ascending=True).head(3)
-    
-    # Most efficient process type
-    process_efficiency = data.groupby('Proses Tipi')['Emalın Səmərəliliyi (%)'].mean().reset_index()
-    best_process = process_efficiency.loc[process_efficiency['Emalın Səmərəliliyi (%)'].idxmax()]
-    
-    summary_text = f"""
+    try:
+        summary = {
+            'total_processes': data.shape[0],
+            'process_types': data['Proses Tipi'].nunique(),
+            'avg_efficiency': data['Emalın Səmərəliliyi (%)'].mean(),
+            'total_energy': data['Enerji İstifadəsi (kWh)'].sum(),
+            'total_cost': data['Əməliyyat Xərcləri (AZN)'].sum(),
+            'avg_co2': data['Ətraf Mühitə Təsir (g CO2 ekvivalent)'].mean(),
+            'max_volume': data['Emal Həcmi (ton)'].max(),
+            'safety_incidents': data['Təhlükəsizlik Hadisələri'].sum()
+        }
+        
+        # Top and bottom performers
+        top_efficiency = data.sort_values('Emalın Səmərəliliyi (%)', ascending=False).head(3)
+        low_efficiency = data.sort_values('Emalın Səmərəliliyi (%)', ascending=True).head(3)
+        
+        # Most efficient process type
+        process_efficiency = data.groupby('Proses Tipi')['Emalın Səmərəliliyi (%)'].mean().reset_index()
+        best_process = process_efficiency.loc[process_efficiency['Emalın Səmərəliliyi (%)'].idxmax()]
+        
+        summary_text = f"""
 Ümumi Məlumat Təhlili:
 - Ümumi proses sayı: {summary['total_processes']}
 - Fərqli proses tipləri: {summary['process_types']}
@@ -155,124 +197,23 @@ def generate_data_summary(data):
 
 Ən Yüksək Səmərəliliyə Malik Proseslər:
 """
-    
-    for i, row in top_efficiency.iterrows():
-        summary_text += f"- Proses ID: {row['Proses ID']}, Tipi: {row['Proses Tipi']}, Səmərəlilik: {row['Emalın Səmərəliliyi (%)']}%\n"
-    
-    summary_text += f"\nƏn Aşağı Səmərəliliyə Malik Proseslər:\n"
-    
-    for i, row in low_efficiency.iterrows():
-        summary_text += f"- Proses ID: {row['Proses ID']}, Tipi: {row['Proses Tipi']}, Səmərəlilik: {row['Emalın Səmərəliliyi (%)']}%\n"
-    
-    summary_text += f"\nƏn Səmərəli Proses Tipi: {best_process['Proses Tipi']} (Ortalama {best_process['Emalın Səmərəliliyi (%)']}%)"
-    
-    return summary_text
-
-# Bot command handlers
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    logger.info(f"Received /start command from user {message.from_user.id}")
-    try:
-        # First try to send a very simple message without markup
-        bot.send_message(message.chat.id, "Bot is starting...")
-        logger.info("Sent initial message")
         
-        # Now try to create and send the keyboard
-        markup = types.ReplyKeyboardMarkup(row_width=2)
-        item1 = types.KeyboardButton('Əsas Məlumatlar')
-        item2 = types.KeyboardButton('Səmərəlilik Analizi')
-        item3 = types.KeyboardButton('Enerji İstifadəsi')
-        item4 = types.KeyboardButton('Ətraf Mühit Təsiri')
-        item5 = types.KeyboardButton('Xərc Analizi')
-        item6 = types.KeyboardButton('OpenAI Təhlili')
+        for i, row in top_efficiency.iterrows():
+            summary_text += f"- Proses ID: {row['Proses ID']}, Tipi: {row['Proses Tipi']}, Səmərəlilik: {row['Emalın Səmərəliliyi (%)']}%\n"
         
-        markup.add(item1, item2, item3, item4, item5, item6)
-        logger.info("Created keyboard markup")
+        summary_text += f"\nƏn Aşağı Səmərəliliyə Malik Proseslər:\n"
         
-        result = bot.send_message(
-            message.chat.id, 
-            "Xoş gəlmisiniz! Lütfən, aşağıdakı seçimlərdən birini seçin:", 
-            reply_markup=markup
-        )
-        logger.info(f"Welcome message sent, message_id: {result.message_id}")
+        for i, row in low_efficiency.iterrows():
+            summary_text += f"- Proses ID: {row['Proses ID']}, Tipi: {row['Proses Tipi']}, Səmərəlilik: {row['Emalın Səmərəliliyi (%)']}%\n"
+        
+        summary_text += f"\nƏn Səmərəli Proses Tipi: {best_process['Proses Tipi']} (Ortalama {best_process['Emalın Səmərəliliyi (%)']}%)"
+        
+        return summary_text
     except Exception as e:
-        logger.error(f"Error in send_welcome: {e}")
-        try:
-            bot.send_message(message.chat.id, f"Error: {str(e)}")
-            logger.info("Sent error message")
-        except Exception as e2:
-            logger.error(f"Could not send error message: {e2}")
-                  
-@bot.message_handler(func=lambda message: message.text == 'Əsas Məlumatlar')
-def send_summary(message):
-    data = load_data()
-    if data is not None:
-        summary = generate_data_summary(data)
-        bot.send_message(message.chat.id, summary)
-    else:
-        bot.send_message(message.chat.id, "Məlumatların yüklənməsində xəta baş verdi.")
+        logger.error(f"Error generating data summary: {str(e)}")
+        raise
 
-@bot.message_handler(func=lambda message: message.text == 'Səmərəlilik Analizi')
-def send_efficiency_chart(message):
-    data = load_data()
-    if data is not None:
-        chart = create_efficiency_chart(data)
-        bot.send_photo(message.chat.id, chart, caption="Proses Tipinə görə Emal Səmərəliliyi")
-    else:
-        bot.send_message(message.chat.id, "Məlumatların yüklənməsində xəta baş verdi.")
-
-@bot.message_handler(func=lambda message: message.text == 'Enerji İstifadəsi')
-def send_energy_chart(message):
-    data = load_data()
-    if data is not None:
-        chart = create_energy_chart(data)
-        bot.send_photo(message.chat.id, chart, caption="Emal Həcmi və Enerji İstifadəsi Arasında Əlaqə")
-    else:
-        bot.send_message(message.chat.id, "Məlumatların yüklənməsində xəta baş verdi.")
-
-@bot.message_handler(func=lambda message: message.text == 'Ətraf Mühit Təsiri')
-def send_environmental_chart(message):
-    data = load_data()
-    if data is not None:
-        chart = create_environmental_chart(data)
-        bot.send_photo(message.chat.id, chart, caption="Proses Tipinə görə Ortalama CO2 Emissiyası")
-    else:
-        bot.send_message(message.chat.id, "Məlumatların yüklənməsində xəta baş verdi.")
-
-@bot.message_handler(func=lambda message: message.text == 'Xərc Analizi')
-def send_cost_chart(message):
-    data = load_data()
-    if data is not None:
-        chart = create_cost_chart(data)
-        bot.send_photo(message.chat.id, chart, caption="Proses Tipinə görə Ümumi Əməliyyat Xərcləri")
-    else:
-        bot.send_message(message.chat.id, "Məlumatların yüklənməsində xəta baş verdi.")
-
-@bot.message_handler(func=lambda message: message.text == 'OpenAI Təhlili')
-def send_ai_insights(message):
-    data = load_data()
-    if data is not None:
-        # Generate data description for OpenAI
-        summary = generate_data_summary(data)
-        
-        bot.send_message(message.chat.id, "OpenAI təhlili hazırlanır, xahiş edirik gözləyin...")
-        
-        insights = generate_insights(summary)
-        
-        # Split message if it's too long
-        if len(insights) > 4000:
-            chunks = [insights[i:i+4000] for i in range(0, len(insights), 4000)]
-            for chunk in chunks:
-                bot.send_message(message.chat.id, chunk)
-        else:
-            bot.send_message(message.chat.id, insights)
-    else:
-        bot.send_message(message.chat.id, "Məlumatların yüklənməsində xəta baş verdi.")
-
-@bot.message_handler(func=lambda message: True)
-def echo_all(message):
-    bot.reply_to(message, "Xahiş edirik mövcud olan düymələrdən birini seçin.")
-
+# Webhook handler (this is what actually works on Render.com)
 @app.route(f'/{TELEGRAM_TOKEN}', methods=['POST'])
 def webhook():
     logger.info("Received webhook request")
@@ -292,7 +233,7 @@ def webhook():
                 # Handle commands manually
                 if message_text == '/start':
                     logger.info("Detected /start command, handling directly")
-                    markup = types.ReplyKeyboardMarkup(row_width=2)
+                    markup = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
                     item1 = types.KeyboardButton('Əsas Məlumatlar')
                     item2 = types.KeyboardButton('Səmərəlilik Analizi')
                     item3 = types.KeyboardButton('Enerji İstifadəsi')
@@ -310,7 +251,11 @@ def webhook():
                     
                     try:
                         # Load data
-                        data = pd.read_csv('data.csv')
+                        data = load_data()
+                        if data is None:
+                            bot.send_message(chat_id, "Məlumatların yüklənməsində xəta baş verdi.")
+                            return ''
+                            
                         logger.info(f"Data loaded: {data.shape[0]} rows, {data.shape[1]} columns")
                         
                         # Generate summary
@@ -322,6 +267,7 @@ def webhook():
                         logger.info("Summary sent to user")
                     except Exception as e:
                         logger.error(f"Error processing data: {e}")
+                        logger.error(traceback.format_exc())
                         bot.send_message(chat_id, f"Məlumatların emalında xəta: {str(e)}")
                 
                 elif message_text == 'Səmərəlilik Analizi':
@@ -330,7 +276,11 @@ def webhook():
                     
                     try:
                         # Load data
-                        data = pd.read_csv('data.csv')
+                        data = load_data()
+                        if data is None:
+                            bot.send_message(chat_id, "Məlumatların yüklənməsində xəta baş verdi.")
+                            return ''
+                            
                         logger.info("Data loaded for efficiency analysis")
                         
                         # Create chart
@@ -342,13 +292,91 @@ def webhook():
                         logger.info("Efficiency chart sent to user")
                     except Exception as e:
                         logger.error(f"Error creating chart: {e}")
+                        logger.error(traceback.format_exc())
                         bot.send_message(chat_id, f"Qrafik yaradılarkən xəta: {str(e)}")
                 
-                # Add handlers for other buttons here
+                elif message_text == 'Enerji İstifadəsi':
+                    logger.info("Handling 'Enerji İstifadəsi' request")
+                    bot.send_message(chat_id, "Enerji istifadəsi analizi hazırlanır...")
+                    
+                    try:
+                        data = load_data()
+                        if data is None:
+                            bot.send_message(chat_id, "Məlumatların yüklənməsində xəta baş verdi.")
+                            return ''
+                            
+                        chart = create_energy_chart(data)
+                        bot.send_photo(chat_id, chart, caption="Emal Həcmi və Enerji İstifadəsi Arasında Əlaqə")
+                        logger.info("Energy chart sent to user")
+                    except Exception as e:
+                        logger.error(f"Error with energy chart: {e}")
+                        logger.error(traceback.format_exc())
+                        bot.send_message(chat_id, f"Qrafik yaradılarkən xəta: {str(e)}")
+                
+                elif message_text == 'Ətraf Mühit Təsiri':
+                    logger.info("Handling 'Ətraf Mühit Təsiri' request")
+                    bot.send_message(chat_id, "Ətraf mühit təsiri analizi hazırlanır...")
+                    
+                    try:
+                        data = load_data()
+                        if data is None:
+                            bot.send_message(chat_id, "Məlumatların yüklənməsində xəta baş verdi.")
+                            return ''
+                            
+                        chart = create_environmental_chart(data)
+                        bot.send_photo(chat_id, chart, caption="Proses Tipinə görə Ortalama CO2 Emissiyası")
+                        logger.info("Environmental chart sent to user")
+                    except Exception as e:
+                        logger.error(f"Error with environmental chart: {e}")
+                        logger.error(traceback.format_exc())
+                        bot.send_message(chat_id, f"Qrafik yaradılarkən xəta: {str(e)}")
+                
+                elif message_text == 'Xərc Analizi':
+                    logger.info("Handling 'Xərc Analizi' request")
+                    bot.send_message(chat_id, "Xərc analizi hazırlanır...")
+                    
+                    try:
+                        data = load_data()
+                        if data is None:
+                            bot.send_message(chat_id, "Məlumatların yüklənməsində xəta baş verdi.")
+                            return ''
+                            
+                        chart = create_cost_chart(data)
+                        bot.send_photo(chat_id, chart, caption="Proses Tipinə görə Ümumi Əməliyyat Xərcləri")
+                        logger.info("Cost chart sent to user")
+                    except Exception as e:
+                        logger.error(f"Error with cost chart: {e}")
+                        logger.error(traceback.format_exc())
+                        bot.send_message(chat_id, f"Qrafik yaradılarkən xəta: {str(e)}")
+                
+                elif message_text == 'OpenAI Təhlili':
+                    logger.info("Handling 'OpenAI Təhlili' request")
+                    bot.send_message(chat_id, "OpenAI təhlili hazırlanır, xahiş edirik gözləyin...")
+                    
+                    try:
+                        data = load_data()
+                        if data is None:
+                            bot.send_message(chat_id, "Məlumatların yüklənməsində xəta baş verdi.")
+                            return ''
+                            
+                        summary = generate_data_summary(data)
+                        insights = generate_insights(summary)
+                        
+                        if len(insights) > 4000:
+                            chunks = [insights[i:i+4000] for i in range(0, len(insights), 4000)]
+                            for chunk in chunks:
+                                bot.send_message(chat_id, chunk)
+                        else:
+                            bot.send_message(chat_id, insights)
+                        logger.info("OpenAI insights sent to user")
+                    except Exception as e:
+                        logger.error(f"Error with OpenAI analysis: {e}")
+                        logger.error(traceback.format_exc())
+                        bot.send_message(chat_id, f"Təhlil yaradılarkən xəta: {str(e)}")
                 
                 else:
                     # Default response
-                    bot.send_message(chat_id, f"'{message_text}' əmri işlənir...")
+                    bot.send_message(chat_id, f"'{message_text}' əmri tanınmadı. Zəhmət olmasa panel düymələrindən istifadə edin.")
                     logger.info(f"Sent default response for: {message_text}")
             
             return ''
@@ -357,8 +385,10 @@ def webhook():
             return '', 403
     except Exception as e:
         logger.error(f"Error in webhook processing: {e}")
-        return '', 500    
-# Health check endpoint
+        logger.error(traceback.format_exc())
+        return '', 500
+
+# Health check endpoints
 @app.route('/health', methods=['GET'])
 def health_check():
     return 'Bot is running!'
@@ -366,10 +396,14 @@ def health_check():
 @app.route('/test-data', methods=['GET'])
 def test_data():
     try:
-        data = pd.read_csv('data/data.csv')
-        return f"CSV loaded successfully: {data.shape[0]} rows, {data.shape[1]} columns"
+        data = load_data()
+        if data is not None:
+            return f"CSV loaded successfully: {data.shape[0]} rows, {data.shape[1]} columns"
+        else:
+            return "Failed to load data.csv"
     except Exception as e:
         return f"Error loading data: {str(e)}"
+
 @app.route('/')
 def index():
     return 'Telegram Bot is running!'
