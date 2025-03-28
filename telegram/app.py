@@ -171,17 +171,23 @@ def generate_data_summary(data):
 # Bot command handlers
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    markup = types.ReplyKeyboardMarkup(row_width=2)
-    item1 = types.KeyboardButton('Əsas Məlumatlar')
-    item2 = types.KeyboardButton('Səmərəlilik Analizi')
-    item3 = types.KeyboardButton('Enerji İstifadəsi')
-    item4 = types.KeyboardButton('Ətraf Mühit Təsiri')
-    item5 = types.KeyboardButton('Xərc Analizi')
-    item6 = types.KeyboardButton('OpenAI Təhlili')
-    
-    markup.add(item1, item2, item3, item4, item5, item6)
-    bot.reply_to(message, "Xoş gəlmisiniz! Lütfən, aşağıdakı seçimlərdən birini seçin:", reply_markup=markup)
-
+    logger.info(f"Received /start command from user {message.from_user.id}")
+    try:
+        markup = types.ReplyKeyboardMarkup(row_width=2)
+        item1 = types.KeyboardButton('Əsas Məlumatlar')
+        item2 = types.KeyboardButton('Səmərəlilik Analizi')
+        item3 = types.KeyboardButton('Enerji İstifadəsi')
+        item4 = types.KeyboardButton('Ətraf Mühit Təsiri')
+        item5 = types.KeyboardButton('Xərc Analizi')
+        item6 = types.KeyboardButton('OpenAI Təhlili')
+        
+        markup.add(item1, item2, item3, item4, item5, item6)
+        logger.info("Sending welcome message with keyboard markup")
+        bot.reply_to(message, "Xoş gəlmisiniz! Lütfən, aşağıdakı seçimlərdən birini seçin:", reply_markup=markup)
+    except Exception as e:
+        logger.error(f"Error in send_welcome: {e}")
+        bot.reply_to(message, "Xəta baş verdi. Zəhmət olmasa bir az sonra yenidən cəhd edin.")
+        
 @bot.message_handler(func=lambda message: message.text == 'Əsas Məlumatlar')
 def send_summary(message):
     data = load_data()
