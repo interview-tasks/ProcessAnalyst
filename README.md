@@ -4,14 +4,47 @@
 
 ## Project Overview
 
-SOCAR Process Analyst is a comprehensive data analytics and visualization solution for oil and gas processing operations. The project consists of two main components:
+SOCAR Process Analyst is a comprehensive data analytics and visualization solution for oil and gas processing operations. This platform provides three different interfaces to access and leverage process data insights:
 
-1. **Data Analysis Module** - Jupyter notebooks for in-depth data exploration and statistical analysis
-2. **Interactive Dashboard** - A web-based dashboard for real-time monitoring and visualization
+1. **GitHub Repository** - Access to source code, analysis notebooks, and development resources
+2. **Web Dashboard** - Interactive visualization and analysis through a browser interface
+3. **Telegram Bot** - Quick insights and alerts through convenient messaging
 
-This solution helps oil and gas processing facilities optimize their operations by providing insights into process efficiency, energy consumption, environmental impact, and catalyst performance.
+Each interface serves different user needs while accessing the same underlying analytics engine.
 
-## Project Structure
+## Core Features
+
+- **Process Efficiency Analysis**: Identify optimal operating parameters to maximize output
+- **Energy Consumption Optimization**: Track and reduce energy usage across operations
+- **Environmental Impact Assessment**: Monitor and minimize CO2 emissions
+- **Catalyst Performance Evaluation**: Compare and optimize catalyst usage
+- **Interactive Visualizations**: Filter and explore process data dynamically
+- **Safety Incident Tracking**: Monitor and improve safety performance
+
+## Data Insights
+
+The platform analyzes process data with 23 key fields including:
+
+- Process types and steps
+- Operating parameters (temperature, pressure, duration)
+- Resource metrics (energy, catalysts, worker count)
+- Efficiency metrics (processing efficiency, energy per ton)
+- Environmental impact (CO2 emissions)
+- Economic indicators (operational costs, cost per ton)
+
+## Three Ways to Access SOCAR Process Analyst
+
+### 1. GitHub Repository
+**URL**: [https://github.com/Ismat-Samadov/SOCAR_ProcessAnalyst](https://github.com/Ismat-Samadov/SOCAR_ProcessAnalyst)
+
+The GitHub repository provides:
+
+- **Source Code Access**: View and download all project components
+- **Jupyter Notebooks**: Run detailed analysis scripts locally
+- **Documentation**: Comprehensive project documentation
+- **Development Resources**: Contribute to or extend the platform
+
+#### Repository Structure
 
 ```
 SOCAR_ProcessAnalyst/
@@ -27,7 +60,7 @@ SOCAR_ProcessAnalyst/
     ├── README.md                  # Dashboard documentation
     ├── app.py                     # Flask application
     ├── data/                      # Dashboard data
-    │   └── data.csv               # Process data copy for dashboard
+    │   └── data.csv               # Process data for dashboard
     ├── requirements.txt           # Python dependencies
     ├── static/                    # Static assets
     │   ├── css/                   # Stylesheets
@@ -38,28 +71,11 @@ SOCAR_ProcessAnalyst/
         └── index.html             # Dashboard HTML template
 ```
 
-## Key Features
-
-- **Process Efficiency Analysis**: Identify optimal operating parameters
-- **Energy Consumption Optimization**: Track and reduce energy usage
-- **Environmental Impact Assessment**: Monitor and minimize emissions
-- **Catalyst Performance Evaluation**: Compare and optimize catalyst usage
-- **Interactive Visualizations**: Filter and explore process data dynamically
-- **Safety Incident Tracking**: Monitor and improve safety performance
-
-## Getting Started
-
-### Prerequisites
-
-- Python 3.9+
-- Pipenv or Virtualenv for dependency management
-- Git for version control
-
-### Installation
+#### Getting Started with the Repository
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/SOCAR_ProcessAnalyst.git
+   git clone https://github.com/Ismat-Samadov/SOCAR_ProcessAnalyst.git
    cd SOCAR_ProcessAnalyst
    ```
 
@@ -74,114 +90,116 @@ SOCAR_ProcessAnalyst/
    pip install -r requirements.txt
    ```
 
-## Components
+4. Run the analysis notebooks:
+   ```bash
+   cd analysis
+   jupyter notebook analyse.ipynb
+   ```
 
-### 1. Analysis Module
+5. Launch the dashboard locally:
+   ```bash
+   cd dashboard
+   python app.py
+   ```
 
-The analysis module provides in-depth statistical analysis of process data using Jupyter notebooks. See [analysis/README.md](analysis/README.md) for detailed documentation.
+### 2. Web Dashboard
+**URL**: [https://socar-processanalyst.onrender.com/](https://socar-processanalyst.onrender.com/)
 
-Features:
+The web dashboard provides:
+
+- **Interactive Visualizations**: Explore data through dynamic charts and graphs
+- **Filtering Capabilities**: Drill down into specific processes, timeframes, or parameters
+- **Performance Metrics**: Track KPIs and benchmarks in real-time
+- **Mobile-Responsive Design**: Access insights from any device
+
+#### Dashboard Features
+
+- **Overview Panel**: High-level metrics and KPIs
+- **Process Analysis**: Detailed breakdowns by process type and step
+- **Efficiency Tracker**: Monitor energy, environmental, and cost efficiency
+- **Catalyst Comparison**: Compare performance across different catalysts
+- **Custom Reports**: Generate tailored reports for specific needs
+
+#### Using the Dashboard
+
+1. Navigate to [https://socar-processanalyst.onrender.com/](https://socar-processanalyst.onrender.com/)
+2. Use the date range selector to focus on specific time periods
+3. Apply filters to analyze specific process types or equipment
+4. Interact with charts to drill down into data
+5. Export reports or visualizations as needed
+
+### 3. Telegram Bot
+**URL**: [https://web.telegram.org/k/#@socar_analyst_bot](https://web.telegram.org/k/#@socar_analyst_bot)
+
+The Telegram bot provides:
+
+- **Quick Insights**: Get key metrics and stats on demand
+- **Automated Alerts**: Receive notifications about process anomalies
+- **Scheduled Reports**: Get daily or weekly performance summaries
+- **Convenient Access**: Use from any device with Telegram installed
+
+#### Bot Commands
+
+- `/start` - Begin interaction with the bot
+- `/help` - View available commands and instructions
+- `/summary` - Get current process performance summary
+- `/efficiency` - View recent efficiency metrics
+- `/alert` - Configure alert thresholds and notifications
+- `/report` - Generate and receive custom reports
+
+#### Using the Telegram Bot
+
+1. Open Telegram and search for `@socar_analyst_bot`
+2. Start a conversation with the bot
+3. Use commands to request specific information
+4. Configure alert preferences for automatic notifications
+5. Schedule regular reports based on your needs
+
+## Technologies Used
+
+- **Data Analysis**: Python, Pandas, NumPy, SciPy, Scikit-learn
+- **Visualization**: Matplotlib, Seaborn, Plotly.js
+- **Web Dashboard**: Flask, Bootstrap, HTML/CSS/JavaScript
+- **Telegram Bot**: Python-telegram-bot, API integration
+- **Deployment**: Render (cloud platform)
+
+## Project Roadmap
+
+### Current Capabilities
 - Statistical analysis of process parameters
-- Correlation studies between variables
-- Efficiency optimization models
-- Predictive analytics for process outcomes
-- Chart generation for reporting
+- Interactive data visualization
+- Performance metric tracking
+- Basic reporting and alerts
 
-### 2. Interactive Dashboard
-
-The dashboard provides a web-based interface for exploring process data with interactive visualizations. See [dashboard/README.md](dashboard/README.md) for detailed documentation.
-
-Features:
-- Real-time visualization of process metrics
-- Interactive filtering and data exploration
-- Multi-dimensional data views
-- KPI tracking and performance monitoring
-- Mobile-responsive design
-
-## Deployment
-
-This project can be deployed to various platforms:
-
-### Local Development
-Follow the installation instructions above for local development.
-
-### Production Deployment
-The dashboard component is designed to be deployed to [Render](https://render.com), a cloud hosting service. See [dashboard/README.md](dashboard/README.md) for detailed deployment instructions.
-
-## Data Structure
-
-The project uses CSV data with the following key fields:
-
-- Process ID
-- Process Type
-- Process Step
-- Processing Volume (tons)
-- Temperature (°C)
-- Pressure (bar)
-- Process Duration (hours)
-- Catalysts Used
-- Processing Efficiency (%)
-- Energy Usage (kWh)
-- Environmental Impact (g CO2 equivalent)
-- Safety Incidents
-- Processing Products
-- Operational Costs (AZN)
-- Equipment Used
-- Worker Count
-- Process Start Date
-- Process End Date
-- Supplier Name
-- Process Groups
-- Energy per ton
-- CO2 per ton
-- Cost per ton
-
-## Development Roadmap
-
-### Phase 1: Data Analysis and Visualization (Completed)
-- Initial data processing and cleaning
-- Basic statistical analysis
-- Chart generation
-- Dashboard prototype
-
-### Phase 2: Interactive Dashboard (Current)
-- Flask backend implementation
-- Interactive data visualizations
-- User interface development
-- Filtering and data exploration
-
-### Phase 3: Predictive Analytics (Planned)
+### Upcoming Features
 - Machine learning models for process optimization
 - Predictive maintenance algorithms
 - Anomaly detection for quality control
 - Real-time optimization recommendations
+- Advanced integration with production systems
 
-### Phase 4: Integration and Deployment (Planned)
-- Integration with production systems
-- Real-time data processing pipeline
-- Automated reporting and alerts
-- Mobile application development
+## Prerequisites and Requirements
 
-## Technologies Used
+- **For Repository Use**: 
+  - Python 3.9+
+  - Git for version control
+  - Dependencies listed in requirements.txt
+  
+- **For Dashboard Access**:
+  - Modern web browser (Chrome, Firefox, Safari, Edge)
+  - Internet connection
+  
+- **For Telegram Bot**:
+  - Telegram account
+  - Mobile device or desktop Telegram client
 
-- **Backend**: Python, Flask, Pandas, NumPy, SciPy
-- **Frontend**: HTML/CSS/JavaScript, Bootstrap, Plotly.js
-- **Data Analysis**: Jupyter Notebooks, Pandas, Matplotlib, Seaborn
-- **Deployment**: Render (Cloud Platform)
+## Team and Support
 
-## Contributing
+SOCAR Process Analyst is developed and maintained by the Ismat Samadov, combining expertise in process engineering, data science, and software development.
 
-To contribute to this project:
+For support or inquiries:
+- **Technical Issues**: File an issue on the GitHub repository
+- **Dashboard Feedback**: Use the feedback form on the dashboard
+- **Bot Assistance**: Use the `/help` command in Telegram
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
 
-## License
-
-This project is proprietary to SOCAR and is not licensed for public use or distribution.
-
-## Contact
-
-For questions or support related to this project, please contact the SOCAR Process Analysis team.
