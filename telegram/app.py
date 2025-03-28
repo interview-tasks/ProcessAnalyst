@@ -276,7 +276,7 @@ def health_check():
 @app.route('/test-data', methods=['GET'])
 def test_data():
     try:
-        data = pd.read_csv('data.csv')
+        data = pd.read_csv('data/data.csv')
         return f"CSV loaded successfully: {data.shape[0]} rows, {data.shape[1]} columns"
     except Exception as e:
         return f"Error loading data: {str(e)}"
