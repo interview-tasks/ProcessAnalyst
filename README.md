@@ -201,7 +201,7 @@ The Telegram bot provides:
   - Telegram account
   - Mobile device or desktop Telegram client
 
-## Team and Support
+## Support
 
 SOCAR Process Analyst is developed and maintained by Ismat Samadov, combining expertise in process engineering, data science, and software development.
 
