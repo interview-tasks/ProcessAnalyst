@@ -56,19 +56,25 @@ SOCAR_ProcessAnalyst/
 │       ├── charts/                # Generated chart images
 │       ├── data.csv               # Process data (CSV format)
 │       └── data.xlsx              # Process data (Excel format)
-└── dashboard/                     # Interactive dashboard component
-    ├── README.md                  # Dashboard documentation
-    ├── app.py                     # Flask application
-    ├── data/                      # Dashboard data
-    │   └── data.csv               # Process data for dashboard
-    ├── requirements.txt           # Python dependencies
-    ├── static/                    # Static assets
-    │   ├── css/                   # Stylesheets
-    │   │   └── style.css          # Dashboard styling
-    │   └── js/                    # JavaScript files
-    │       └── main.js            # Dashboard interactivity
-    └── templates/                 # HTML templates
-        └── index.html             # Dashboard HTML template
+├── dashboard/                     # Interactive dashboard component
+│   ├── README.md                  # Dashboard documentation
+│   ├── app.py                     # Flask application
+│   ├── data/                      # Dashboard data
+│   │   └── data.csv               # Process data for dashboard
+│   ├── requirements.txt           # Python dependencies
+│   ├── static/                    # Static assets
+│   │   ├── css/                   # Stylesheets
+│   │   │   └── style.css          # Dashboard styling
+│   │   └── js/                    # JavaScript files
+│   │       └── main.js            # Dashboard interactivity
+│   └── templates/                 # HTML templates
+│       └── index.html             # Dashboard HTML template
+└── telegram/                      # Telegram bot component
+    ├── README.md                  # Bot documentation
+    ├── app.py                     # Bot application
+    ├── data/                      # Bot data
+    │   └── data.csv               # Process data for bot
+    └── requirements.txt           # Python dependencies
 ```
 
 #### Getting Started with the Repository
@@ -123,10 +129,10 @@ The web dashboard provides:
 #### Using the Dashboard
 
 1. Navigate to [https://socar-processanalyst.onrender.com/](https://socar-processanalyst.onrender.com/)
-2. Use the date range selector to focus on specific time periods
-3. Apply filters to analyze specific process types or equipment
+2. Use the process type filter to focus on specific process categories
+3. Navigate between different sections using the sidebar menu
 4. Interact with charts to drill down into data
-5. Export reports or visualizations as needed
+5. View detailed analyses for efficiency, energy, environmental impact, and catalysts
 
 ### 3. Telegram Bot
 **URL**: [https://web.telegram.org/k/#@socar_analyst_bot](https://web.telegram.org/k/#@socar_analyst_bot)
@@ -135,32 +141,34 @@ The Telegram bot provides:
 
 - **Quick Insights**: Get key metrics and stats on demand
 - **Automated Alerts**: Receive notifications about process anomalies
-- **Scheduled Reports**: Get daily or weekly performance summaries
+- **Data Visualizations**: View charts and graphs directly in Telegram
 - **Convenient Access**: Use from any device with Telegram installed
 
 #### Bot Commands
 
 - `/start` - Begin interaction with the bot
 - `/help` - View available commands and instructions
-- `/summary` - Get current process performance summary
-- `/efficiency` - View recent efficiency metrics
-- `/alert` - Configure alert thresholds and notifications
-- `/report` - Generate and receive custom reports
+- `Əsas Məlumatlar` - Get basic information about process data
+- `Səmərəlilik Analizi` - View efficiency analysis
+- `Enerji İstifadəsi` - See energy usage patterns
+- `Ətraf Mühit Təsiri` - View environmental impact analysis
+- `Xərc Analizi` - Get cost analysis information
+- `OpenAI Təhlili` - Generate AI-powered insights
 
 #### Using the Telegram Bot
 
 1. Open Telegram and search for `@socar_analyst_bot`
-2. Start a conversation with the bot
-3. Use commands to request specific information
-4. Configure alert preferences for automatic notifications
-5. Schedule regular reports based on your needs
+2. Start a conversation with the bot using `/start`
+3. Use the keyboard menu to request specific analyses
+4. Receive visual charts and data summaries directly in your chat
+5. Get AI-powered insights through natural language processing
 
 ## Technologies Used
 
 - **Data Analysis**: Python, Pandas, NumPy, SciPy, Scikit-learn
 - **Visualization**: Matplotlib, Seaborn, Plotly.js
 - **Web Dashboard**: Flask, Bootstrap, HTML/CSS/JavaScript
-- **Telegram Bot**: Python-telegram-bot, API integration
+- **Telegram Bot**: pyTelegramBotAPI, OpenAI API integration
 - **Deployment**: Render (cloud platform)
 
 ## Project Roadmap
@@ -195,11 +203,9 @@ The Telegram bot provides:
 
 ## Team and Support
 
-SOCAR Process Analyst is developed and maintained by the Ismat Samadov, combining expertise in process engineering, data science, and software development.
+SOCAR Process Analyst is developed and maintained by Ismat Samadov, combining expertise in process engineering, data science, and software development.
 
 For support or inquiries:
 - **Technical Issues**: File an issue on the GitHub repository
 - **Dashboard Feedback**: Use the feedback form on the dashboard
 - **Bot Assistance**: Use the `/help` command in Telegram
-
-
