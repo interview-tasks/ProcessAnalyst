@@ -1,6 +1,6 @@
 # SOCAR Process Analyst
 
-![SOCAR Process Analyst Logo](https://via.placeholder.com/800x200.png?text=SOCAR+Process+Analyst)
+![SOCAR Process Analyst Logo](https://media.istockphoto.com/id/925690772/vector/icon-icon-with-the-concept-of-searching-analyzing-for-business-finance-and-marketing.jpg?s=612x612&w=0&k=20&c=eYqm89QSN6MWpXRICxTCCQdX6o-mg-Lu9rZLWK6WNgM=)
 
 ## Project Overview
 
