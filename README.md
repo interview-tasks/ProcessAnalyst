@@ -146,7 +146,7 @@ The Telegram bot provides:
 
 #### Bot Commands
 
-- `/start` - Begin interaction with the bot
+- `/start` - Begin interaction with the bot (**REQUIRED FIRST STEP**)
 - `/help` - View available commands and instructions
 - `Əsas Məlumatlar` - Get basic information about process data
 - `Səmərəlilik Analizi` - View efficiency analysis
@@ -158,10 +158,11 @@ The Telegram bot provides:
 #### Using the Telegram Bot
 
 1. Open Telegram and search for `@socar_analyst_bot`
-2. Start a conversation with the bot using `/start`
-3. Use the keyboard menu to request specific analyses
-4. Receive visual charts and data summaries directly in your chat
-5. Get AI-powered insights through natural language processing
+2. **IMPORTANT**: You MUST send the `/start` command to initialize the bot
+3. After sending `/start`, a keyboard menu will appear
+4. Use the keyboard menu to request specific analyses
+5. Receive visual charts and data summaries directly in your chat
+6. Get AI-powered insights through natural language processing
 
 ## Technologies Used
 
