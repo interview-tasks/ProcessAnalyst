@@ -1,10 +1,10 @@
 # Process Analyst
 
-![SOCAR Process Analyst Logo](https://media.istockphoto.com/id/925690772/vector/icon-icon-with-the-concept-of-searching-analyzing-for-business-finance-and-marketing.jpg?s=612x612&w=0&k=20&c=eYqm89QSN6MWpXRICxTCCQdX6o-mg-Lu9rZLWK6WNgM=)
+![Process Analyst Logo](https://media.istockphoto.com/id/925690772/vector/icon-icon-with-the-concept-of-searching-analyzing-for-business-finance-and-marketing.jpg?s=612x612&w=0&k=20&c=eYqm89QSN6MWpXRICxTCCQdX6o-mg-Lu9rZLWK6WNgM=)
 
 ## Project Overview
 
-SOCAR Process Analyst is a comprehensive data analytics and visualization solution for oil and gas processing operations. This platform provides three different interfaces to access and leverage process data insights:
+Process Analyst is a comprehensive data analytics and visualization solution for oil and gas processing operations. This platform provides three different interfaces to access and leverage process data insights:
 
 1. **GitHub Repository** - Access to source code, analysis notebooks, and development resources
 2. **Web Dashboard** - Interactive visualization and analysis through a browser interface
@@ -32,10 +32,10 @@ The platform analyzes process data with 23 key fields including:
 - Environmental impact (CO2 emissions)
 - Economic indicators (operational costs, cost per ton)
 
-## Three Ways to Access SOCAR Process Analyst
+## Three Ways to Access Process Analyst
 
 ### 1. GitHub Repository
-**URL**: [https://github.com/Ismat-Samadov/SOCAR_ProcessAnalyst](https://github.com/Ismat-Samadov/SOCAR_ProcessAnalyst)
+**URL**: [https://github.com/Ismat-Samadov/ProcessAnalyst](https://github.com/Ismat-Samadov/ProcessAnalyst)
 
 The GitHub repository provides:
 
@@ -47,7 +47,7 @@ The GitHub repository provides:
 #### Repository Structure
 
 ```
-SOCAR_ProcessAnalyst/
+ProcessAnalyst/
 ├── README.md                      # Main project README
 ├── analysis/                      # Data analysis component
 │   ├── README.md                  # Analysis module documentation
@@ -81,8 +81,8 @@ SOCAR_ProcessAnalyst/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Ismat-Samadov/SOCAR_ProcessAnalyst.git
-   cd SOCAR_ProcessAnalyst
+   git clone https://github.com/Ismat-Samadov/ProcessAnalyst.git
+   cd ProcessAnalyst
    ```
 
 2. Create and activate a virtual environment:
@@ -109,7 +109,7 @@ SOCAR_ProcessAnalyst/
    ```
 
 ### 2. Web Dashboard
-**URL**: [https://socar-processanalyst.onrender.com/](https://socar-processanalyst.onrender.com/)
+**URL**: [https://processanalyst.onrender.com/](https://processanalyst.onrender.com/)
 
 The web dashboard provides:
 
@@ -128,14 +128,14 @@ The web dashboard provides:
 
 #### Using the Dashboard
 
-1. Navigate to [https://socar-processanalyst.onrender.com/](https://socar-processanalyst.onrender.com/)
+1. Navigate to [https://processanalyst.onrender.com/](https://processanalyst.onrender.com/)
 2. Use the process type filter to focus on specific process categories
 3. Navigate between different sections using the sidebar menu
 4. Interact with charts to drill down into data
 5. View detailed analyses for efficiency, energy, environmental impact, and catalysts
 
 ### 3. Telegram Bot
-**URL**: [https://web.telegram.org/k/#@socar_analyst_bot](https://web.telegram.org/k/#@socar_analyst_bot)
+**URL**: [https://web.telegram.org/k/#@analyst_bot](https://web.telegram.org/k/#@analyst_bot)
 
 The Telegram bot provides:
 
@@ -157,7 +157,7 @@ The Telegram bot provides:
 
 #### Using the Telegram Bot
 
-1. Open Telegram and search for `@socar_analyst_bot`
+1. Open Telegram and search for `@analyst_bot`
 2. **IMPORTANT**: You MUST send the `/start` command to initialize the bot
 3. After sending `/start`, a keyboard menu will appear
 4. Use the keyboard menu to request specific analyses
@@ -204,7 +204,7 @@ The Telegram bot provides:
 
 ## Support
 
-SOCAR Process Analyst is developed and maintained by Ismat Samadov, combining expertise in process engineering, data science, and software development.
+Process Analyst is developed and maintained by Ismat Samadov, combining expertise in process engineering, data science, and software development.
 
 For support or inquiries:
 - **Technical Issues**: File an issue on the GitHub repository
