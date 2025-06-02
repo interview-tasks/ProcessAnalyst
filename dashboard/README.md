@@ -4,7 +4,7 @@
 
 The Process Analyst Dashboard is an interactive web application built with Flask backend and HTML/CSS/JavaScript frontend. It visualizes oil and gas processing data, providing insights into process efficiency, energy usage, environmental impact, and catalyst performance.
 
-![Dashboard Preview](https://via.placeholder.com/800x450.png?text=Process+Analyst+Dashboard)
+![Dashboard Preview](https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=2947&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)
 
 ## Features
 
