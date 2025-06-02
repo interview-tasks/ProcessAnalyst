@@ -135,7 +135,7 @@ The web dashboard provides:
 5. View detailed analyses for efficiency, energy, environmental impact, and catalysts
 
 ### 3. Telegram Bot
-**URL**: [https://web.telegram.org/k/#@analyst_bot](https://web.telegram.org/k/#@analyst_bot)
+**URL**: [https://t.me/prossi_bot](https://t.me/prossi_bot)
 
 The Telegram bot provides:
 
