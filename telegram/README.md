@@ -1,4 +1,4 @@
-# SOCAR Oil & Gas Processing Data Analysis Bot
+# Oil & Gas Processing Data Analysis Bot
 
 A Telegram bot that delivers interactive data analysis, visualizations, and AI-powered insights for oil and gas processing data in Azerbaijani.
 

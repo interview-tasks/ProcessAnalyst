@@ -1,10 +1,10 @@
-# SOCAR Process Analyst Dashboard
+# Process Analyst Dashboard
 
 ## Overview
 
-The SOCAR Process Analyst Dashboard is an interactive web application built with Flask backend and HTML/CSS/JavaScript frontend. It visualizes oil and gas processing data, providing insights into process efficiency, energy usage, environmental impact, and catalyst performance.
+The Process Analyst Dashboard is an interactive web application built with Flask backend and HTML/CSS/JavaScript frontend. It visualizes oil and gas processing data, providing insights into process efficiency, energy usage, environmental impact, and catalyst performance.
 
-![Dashboard Preview](https://via.placeholder.com/800x450.png?text=SOCAR+Process+Analyst+Dashboard)
+![Dashboard Preview](https://via.placeholder.com/800x450.png?text=Process+Analyst+Dashboard)
 
 ## Features
 
@@ -107,7 +107,7 @@ Displays a chronological view of recent processes with duration and type.
    - Select the branch to deploy
 
 4. Configure the Web Service:
-   - Name: `socar-process-analyst`
+   - Name: `process-analyst`
    - Environment: `Python 3`
    - Build Command: `pip install -r dashboard/requirements.txt`
    - Start Command: `cd dashboard && gunicorn app:app`
@@ -203,8 +203,8 @@ To contribute to this dashboard:
 
 ## License
 
-This project is proprietary to SOCAR and is not licensed for public use or distribution.
+This project is proprietary to and is not licensed for public use or distribution.
 
 ## Contact
 
-For any questions or support, please contact the SOCAR Process Analysis team.
+For any questions or support, please contact the Process Analysis team.
