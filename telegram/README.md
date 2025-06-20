@@ -183,11 +183,3 @@ The application expects a CSV file with the following columns:
 ## License
 
 This project is proprietary and confidential. Unauthorized copying, distribution or use is strictly prohibited.
-
-## Author
-
-Ismat Samadov
-
----
-
-For any issues or suggestions, please contact ismetsemedov@gmail.com

@@ -204,7 +204,3 @@ To contribute to this dashboard:
 ## License
 
 This project is proprietary to and is not licensed for public use or distribution.
-
-## Contact
-
-For any questions or support, please contact the Process Analysis team.
