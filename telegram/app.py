@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend to avoid font cache issues
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -39,33 +41,15 @@ if not TELEGRAM_TOKEN:
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 
-# Load the data - check both locations
+# Load the data from correct path
 def load_data():
     try:
-        # Try data.csv in root directory first
-        try:
-            data = pd.read_csv('data.csv')
-            logger.info(f"Data loaded from root directory: {data.shape[0]} rows, {data.shape[1]} columns")
-            return data
-        except Exception as e:
-            logger.warning(f"Error loading data from root: {e}")
-            
-        # Try data directory
-        try:
-            data = pd.read_csv('data/data.csv')
-            logger.info(f"Data loaded from data directory: {data.shape[0]} rows, {data.shape[1]} columns")
-            return data
-        except Exception as e:
-            logger.warning(f"Error loading data from data directory: {e}")
-            
-        # Try working directory
-        import glob
-        logger.info(f"Files in current directory: {glob.glob('*')}")
-        logger.info(f"Current working directory: {os.getcwd()}")
-            
-        raise Exception("Could not find data.csv in any location")
+        # Data is located in data/data.csv directory
+        data = pd.read_csv('data/data.csv')
+        logger.info(f"Data loaded successfully: {data.shape[0]} rows, {data.shape[1]} columns")
+        return data
     except Exception as e:
-        logger.error(f"Error loading data: {e}")
+        logger.error(f"Error loading data from data/data.csv: {e}")
         return None
 
 # Function to generate insights using Gemini in Azerbaijani

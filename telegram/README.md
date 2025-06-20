@@ -4,7 +4,7 @@ A Telegram bot that delivers interactive data analysis, visualizations, and AI-p
 
 ## Overview
 
-This application integrates Telegram's messaging platform with powerful data analysis capabilities and OpenAI's language model to provide engineers and managers in the petroleum industry with quick access to critical operational metrics. The bot analyzes processing data to deliver insights on efficiency, energy consumption, environmental impact, and operational costs.
+This application integrates Telegram's messaging platform with powerful data analysis capabilities and Google's Gemini AI to provide engineers and managers in the petroleum industry with quick access to critical operational metrics. The bot analyzes processing data to deliver insights on efficiency, energy consumption, environmental impact, and operational costs.
 
 ## Features
 
@@ -15,7 +15,7 @@ This application integrates Telegram's messaging platform with powerful data ana
   - **Energy Usage**: Scatter plots relating processing volume to energy consumption
   - **Environmental Impact**: Bar charts of CO2 emissions by process type
   - **Cost Analysis**: Visualization of operational costs by process type
-- **AI-Powered Insights**: Azerbaijani language analysis of the data using OpenAI's GPT-4
+- **AI-Powered Insights**: Azerbaijani language analysis of the data using Google Gemini 1.5 Flash
 - **Robust Error Handling**: Comprehensive logging and graceful error handling
 
 ## Technical Implementation
@@ -27,7 +27,7 @@ This application integrates Telegram's messaging platform with powerful data ana
 - **pyTelegramBotAPI**: Framework for Telegram Bot API
 - **Pandas & NumPy**: Data analysis libraries
 - **Matplotlib, Seaborn & Plotly**: Data visualization
-- **OpenAI API**: Advanced natural language processing
+- **Google Gemini API**: Advanced natural language processing
 
 ### Architecture
 
@@ -50,7 +50,7 @@ Data processing follows a pipeline pattern:
 
 - Python 3.11 or higher
 - A Telegram Bot token from BotFather
-- An OpenAI API key
+- A Google Gemini API key
 - A Render.com account (or another hosting service)
 
 ### Local Development Setup
@@ -71,7 +71,7 @@ Data processing follows a pipeline pattern:
 4. Create a `.env` file with the following variables:
    ```
    TELEGRAM_TOKEN=your_telegram_bot_token
-   OPENAI_API_KEY=your_openai_api_key
+   GEMINI_API_KEY=your_gemini_api_key
    APP_URL=http://localhost:5000  # For local development
    ENVIRONMENT=development
    ```
@@ -96,7 +96,7 @@ Data processing follows a pipeline pattern:
 
 4. Add the following environment variables:
    - `TELEGRAM_TOKEN`: Your Telegram bot token
-   - `OPENAI_API_KEY`: Your OpenAI API key
+   - `GEMINI_API_KEY`: Your Google Gemini API key
    - `APP_URL`: Your Render.com app URL (without trailing slash)
    - `ENVIRONMENT`: Set to `production`
    - `PORT`: Set to `10000`
@@ -157,8 +157,8 @@ The application expects a CSV file with the following columns:
    - Check if all required columns are present
    - Look for any data type issues in your CSV
 
-4. **OpenAI analysis fails**:
-   - Verify your OpenAI API key is valid
+4. **Gemini analysis fails**:
+   - Verify your Gemini API key is valid
    - Check for any API rate limits or quota issues
    - Examine the specific error message in the logs
 
@@ -178,7 +178,7 @@ The application expects a CSV file with the following columns:
    - "Enerji İstifadəsi" (Energy Usage): Shows energy consumption patterns
    - "Ətraf Mühit Təsiri" (Environmental Impact): Displays CO2 emissions analysis
    - "Xərc Analizi" (Cost Analysis): Shows operational costs breakdown
-   - "OpenAI Təhlili" (OpenAI Analysis): Provides AI-generated insights in Azerbaijani
+   - "Gemini Təhlili" (Gemini Analysis): Provides AI-generated insights in Azerbaijani
 
 ## License
 
