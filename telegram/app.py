@@ -6,7 +6,7 @@ import numpy as np
 import logging
 import telebot
 from telebot import types
-import openai
+import google.generativeai as genai
 from io import BytesIO
 import plotly.express as px
 import plotly.io as pio
@@ -25,9 +25,9 @@ logger = logging.getLogger(__name__)
 # Initialize the Flask app
 app = Flask(__name__)
 
-# Initialize OpenAI API
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
-openai.api_key = OPENAI_API_KEY
+# Initialize Gemini API
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+genai.configure(api_key=GEMINI_API_KEY)
 
 # Initialize Telegram bot
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
@@ -67,20 +67,19 @@ def load_data():
         logger.error(f"Error loading data: {e}")
         return None
 
-# Function to generate insights using OpenAI in Azerbaijani
+# Function to generate insights using Gemini in Azerbaijani
 def generate_insights(data_description):
     try:
-        completion = openai.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "Sən dəqiq və analitik neft və qaz emalı prosesləri üzrə məlumatlar haqqında Azərbaycan dilində təhlil təqdim edən köməkçisən."},
-                {"role": "user", "content": f"Aşağıdakı məlumatları təhlil et və biznes üçün əhəmiyyətli nəticələri Azərbaycan dilində təqdim et: {data_description}"}
-            ]
-        )
-        return completion.choices[0].message.content
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        prompt = f"""Sən dəqiq və analitik neft və qaz emalı prosesləri üzrə məlumatlar haqqında Azərbaycan dilində təhlil təqdim edən köməkçisən.
+        
+Aşağıdakı məlumatları təhlil et və biznes üçün əhəmiyyətli nəticələri Azərbaycan dilində təqdim et: {data_description}"""
+        
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
-        logger.error(f"Error generating insights with OpenAI: {e}")
-        return "OpenAI ilə təhlil yaradılarkən xəta baş verdi."
+        logger.error(f"Error generating insights with Gemini: {e}")
+        return "Gemini ilə təhlil yaradılarkən xəta baş verdi."
 
 # Function to create charts
 def create_efficiency_chart(data):
@@ -239,7 +238,7 @@ def webhook():
                     item3 = types.KeyboardButton('Enerji İstifadəsi')
                     item4 = types.KeyboardButton('Ətraf Mühit Təsiri')
                     item5 = types.KeyboardButton('Xərc Analizi')
-                    item6 = types.KeyboardButton('OpenAI Təhlili')
+                    item6 = types.KeyboardButton('Gemini Təhlili')
                     
                     markup.add(item1, item2, item3, item4, item5, item6)
                     bot.send_message(chat_id, "Xoş gəlmisiniz! Lütfən, seçim edin:", reply_markup=markup)
@@ -349,9 +348,9 @@ def webhook():
                         logger.error(traceback.format_exc())
                         bot.send_message(chat_id, f"Qrafik yaradılarkən xəta: {str(e)}")
                 
-                elif message_text == 'OpenAI Təhlili':
-                    logger.info("Handling 'OpenAI Təhlili' request")
-                    bot.send_message(chat_id, "OpenAI təhlili hazırlanır, xahiş edirik gözləyin...")
+                elif message_text == 'Gemini Təhlili':
+                    logger.info("Handling 'Gemini Təhlili' request")
+                    bot.send_message(chat_id, "Gemini təhlili hazırlanır, xahiş edirik gözləyin...")
                     
                     try:
                         data = load_data()
@@ -368,9 +367,9 @@ def webhook():
                                 bot.send_message(chat_id, chunk)
                         else:
                             bot.send_message(chat_id, insights)
-                        logger.info("OpenAI insights sent to user")
+                        logger.info("Gemini insights sent to user")
                     except Exception as e:
-                        logger.error(f"Error with OpenAI analysis: {e}")
+                        logger.error(f"Error with Gemini analysis: {e}")
                         logger.error(traceback.format_exc())
                         bot.send_message(chat_id, f"Təhlil yaradılarkən xəta: {str(e)}")
                 
