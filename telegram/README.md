@@ -3,7 +3,7 @@
 A Telegram bot that delivers interactive data analysis, visualizations, and AI-powered insights for oil and gas processing data in Azerbaijani.
 
 @prossi_bot
-
+https://web.telegram.org/k/#@prossi_bot
 ## Overview
 
 This application integrates Telegram's messaging platform with powerful data analysis capabilities and Google's Gemini AI to provide engineers and managers in the petroleum industry with quick access to critical operational metrics. The bot analyzes processing data to deliver insights on efficiency, energy consumption, environmental impact, and operational costs.
